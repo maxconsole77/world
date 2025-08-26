@@ -1,0 +1,32 @@
+{
+  "Roma": [
+    { "id":"rm_colosseo","name":"Colosseo","family":"Arte & Storia","type":"sight","durationMins":120,"lat":41.8902,"lng":12.4922 },
+    { "id":"rm_fori","name":"Fori Imperiali","family":"Arte & Storia","type":"sight","durationMins":90,"lat":41.8933,"lng":12.4870 },
+    { "id":"rm_vaticani","name":"Musei Vaticani","family":"Arte & Storia","type":"museum","durationMins":180,"lat":41.9065,"lng":12.4536 },
+    { "id":"rm_pantheon","name":"Pantheon","family":"Arte & Storia","type":"sight","durationMins":60,"lat":41.8986,"lng":12.4769 },
+    { "id":"rm_villa_borghese","name":"Villa Borghese","family":"Natura & Parchi","type":"park","durationMins":120,"lat":41.9142,"lng":12.4923 },
+    { "id":"rm_trastevere_food","name":"Trastevere – cena tipica","family":"Cibo & Mercati","type":"food","durationMins":120,"lat":41.8897,"lng":12.4709 },
+    { "id":"rm_pincio","name":"Terrazza del Pincio","family":"Panorami","type":"view","durationMins":45,"lat":41.9107,"lng":12.4768 },
+    { "id":"rm_bioparco","name":"Bioparco di Roma","family":"Famiglia","type":"zoo","durationMins":120,"lat":41.9257,"lng":12.4891 }
+  ],
+  "Parigi": [
+    { "id":"pa_eiffel","name":"Torre Eiffel","family":"Panorami","type":"sight","durationMins":90,"lat":48.8584,"lng":2.2945 },
+    { "id":"pa_louvre","name":"Museo del Louvre","family":"Arte & Storia","type":"museum","durationMins":180,"lat":48.8606,"lng":2.3376 },
+    { "id":"pa_montmartre","name":"Montmartre & Sacré-Cœur","family":"Arte & Storia","type":"sight","durationMins":120,"lat":48.8867,"lng":2.3431 },
+    { "id":"pa_seine","name":"Crociera sulla Senna","family":"Famiglia","type":"experience","durationMins":60,"lat":48.858,"lng":2.3266 },
+    { "id":"pa_luxembourg","name":"Giardini del Lussemburgo","family":"Natura & Parchi","type":"park","durationMins":90,"lat":48.8462,"lng":2.3372 },
+    { "id":"pa_marais_food","name":"Le Marais – bistrot","family":"Cibo & Mercati","type":"food","durationMins":90,"lat":48.857,"lng":2.3622 },
+    { "id":"pa_disney","name":"Disneyland Paris","family":"Famiglia","type":"park","durationMins":480,"lat":48.8674,"lng":2.7833 },
+    { "id":"pa_pompidou","name":"Centre Pompidou","family":"Arte & Storia","type":"museum","durationMins":120,"lat":48.8606,"lng":2.3522 }
+  ],
+  "Londra": [
+    { "id":"ld_tower","name":"Tower of London","family":"Arte & Storia","type":"sight","durationMins":120,"lat":51.5081,"lng":-0.0759 },
+    { "id":"ld_british","name":"British Museum","family":"Arte & Storia","type":"museum","durationMins":180,"lat":51.5194,"lng":-0.127 },
+    { "id":"ld_eye","name":"London Eye","family":"Panorami","type":"view","durationMins":60,"lat":51.5033,"lng":-0.1195 },
+    { "id":"ld_greenwich","name":"Greenwich Park","family":"Natura & Parchi","type":"park","durationMins":120,"lat":51.4769,"lng":-0.0005 },
+    { "id":"ld_camden","name":"Camden Market – street food","family":"Cibo & Mercati","type":"food","durationMins":90,"lat":51.5413,"lng":-0.142 },
+    { "id":"ld_nat_history","name":"Natural History Museum","family":"Famiglia","type":"museum","durationMins":150,"lat":51.4967,"lng":-0.1764 },
+    { "id":"ld_buckingham","name":"Buckingham Palace","family":"Arte & Storia","type":"sight","durationMins":60,"lat":51.5014,"lng":-0.1419 },
+    { "id":"ld_skygarden","name":"Sky Garden","family":"Panorami","type":"view","durationMins":60,"lat":51.5108,"lng":-0.0838 }
+  ]
+}

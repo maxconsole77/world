@@ -1,0 +1,107 @@
+{
+  "Roma": {
+    "language": "Italiano",
+    "contexts": {
+      "airport": [
+        { "key": "checkin", "local": "Dove si trova il banco check-in per questo volo?" },
+        { "key": "luggage", "local": "Dov'è il ritiro bagagli?" },
+        { "key": "transport", "local": "Dove posso prendere un taxi o il treno per il centro?" }
+      ],
+      "hotel": [
+        { "key": "reservation", "local": "Ho una prenotazione a nome di ..." },
+        { "key": "wifi", "local": "Qual è la password del Wi-Fi?" },
+        { "key": "late_check_out", "local": "È possibile fare il late check-out?" }
+      ],
+      "restaurant": [
+        { "key": "table", "local": "Un tavolo per due, per favore." },
+        { "key": "allergy", "local": "Sono allergico/a a ..." },
+        { "key": "bill", "local": "Il conto, per favore." }
+      ],
+      "transport": [
+        { "key": "tickets", "local": "Dove posso comprare i biglietti della metro?" },
+        { "key": "direction", "local": "Quale linea porta a ...?" },
+        { "key": "schedule", "local": "Ogni quanto passa?" }
+      ],
+      "shopping": [
+        { "key": "price", "local": "Quanto costa?" },
+        { "key": "size", "local": "Avete questa taglia?" },
+        { "key": "tax_free", "local": "Fate il tax free?" }
+      ],
+      "emergency": [
+        { "key": "help", "local": "Aiuto!" },
+        { "key": "police", "local": "Chiamate la polizia." },
+        { "key": "doctor", "local": "Ho bisogno di un medico." }
+      ]
+    }
+  },
+  "Parigi": {
+    "language": "Français",
+    "contexts": {
+      "airport": [
+        { "key": "checkin", "local": "Où est l’enregistrement pour ce vol ?" },
+        { "key": "luggage", "local": "Où est la récupération des bagages ?" },
+        { "key": "transport", "local": "Où puis-je prendre un taxi ou le train pour le centre-ville ?" }
+      ],
+      "hotel": [
+        { "key": "reservation", "local": "J’ai une réservation au nom de ..." },
+        { "key": "wifi", "local": "Quel est le mot de passe du Wi-Fi ?" },
+        { "key": "late_check_out", "local": "Est-il possible de faire un late check-out ?" }
+      ],
+      "restaurant": [
+        { "key": "table", "local": "Une table pour deux, s’il vous plaît." },
+        { "key": "allergy", "local": "Je suis allergique à ..." },
+        { "key": "bill", "local": "L’addition, s’il vous plaît." }
+      ],
+      "transport": [
+        { "key": "tickets", "local": "Où puis-je acheter des tickets de métro ?" },
+        { "key": "direction", "local": "Quelle ligne va à ... ?" },
+        { "key": "schedule", "local": "C’est toutes les combien ?" }
+      ],
+      "shopping": [
+        { "key": "price", "local": "C’est combien ?" },
+        { "key": "size", "local": "Vous avez cette taille ?" },
+        { "key": "tax_free", "local": "Faites-vous le tax free ?" }
+      ],
+      "emergency": [
+        { "key": "help", "local": "Au secours !" },
+        { "key": "police", "local": "Appelez la police." },
+        { "key": "doctor", "local": "J’ai besoin d’un médecin." }
+      ]
+    }
+  },
+  "Londra": {
+    "language": "English",
+    "contexts": {
+      "airport": [
+        { "key": "checkin", "local": "Where is the check-in for this flight?" },
+        { "key": "luggage", "local": "Where is baggage claim?" },
+        { "key": "transport", "local": "Where can I get a taxi or train to the city centre?" }
+      ],
+      "hotel": [
+        { "key": "reservation", "local": "I have a reservation under the name ..." },
+        { "key": "wifi", "local": "What is the Wi-Fi password?" },
+        { "key": "late_check_out", "local": "Is late check-out possible?" }
+      ],
+      "restaurant": [
+        { "key": "table", "local": "A table for two, please." },
+        { "key": "allergy", "local": "I’m allergic to ..." },
+        { "key": "bill", "local": "The bill, please." }
+      ],
+      "transport": [
+        { "key": "tickets", "local": "Where can I buy tube tickets?" },
+        { "key": "direction", "local": "Which line goes to ...?" },
+        { "key": "schedule", "local": "How often does it run?" }
+      ],
+      "shopping": [
+        { "key": "price", "local": "How much is this?" },
+        { "key": "size", "local": "Do you have this size?" },
+        { "key": "tax_free", "local": "Do you offer tax-free shopping?" }
+      ],
+      "emergency": [
+        { "key": "help", "local": "Help!" },
+        { "key": "police", "local": "Call the police." },
+        { "key": "doctor", "local": "I need a doctor." }
+      ]
+    }
+  }
+}
