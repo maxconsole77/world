@@ -1,10 +1,16 @@
 {
   "tabs": {
-    "trip": "Voyage",
+    "trip": "Parcours",
     "usefulPhrases": "Phrases utiles",
-    "profile": "Profil"
+    "profile": "Profil",
+    "weather": "Météo",
+    "phrases": "Phrases",
+    "diagnostics": "Diagnostic"
   },
-  "intro": { "subtitle": "Votre guide de voyage intelligent et convivial.", "getStarted": "Commencer" },
+  "intro": {
+    "subtitle": "Votre guide de voyage intelligent et convivial.",
+    "getStarted": "Commencer"
+  },
   "auth": {
     "title": "Se connecter",
     "caption": "Nous vous enverrons un lien magique par e-mail.",
@@ -123,19 +129,35 @@
     }
   },
   "trip": {
-    "title": "Voyage",
-    "today": "Aujourd'hui",
+    "title": "Parcours",
+    "today": "Aujourd’hui",
     "weatherFor": "Météo pour {{city}} — {{date}}",
-    "tempMinMax": "min {{min}}° / max {{max}}°",
+    "tempMinMax": "min {{min}} / max {{max}}",
     "rainProb": "Pluie {{p}}%",
-    "weatherNA": "Météo non disponible",
-    "badWeatherHint": "Pluie probable : priorité aux activités intérieures.",
-    "filter": { "all": "Tous", "indoor": "Intérieur", "outdoor": "Extérieur" },
+    "weatherNA": "Données météo indisponibles",
+    "badWeatherHint": "Mauvais temps : privilégiez l’intérieur",
+    "filter": {
+      "all": "Tous",
+      "indoor": "Intérieur",
+      "outdoor": "Extérieur"
+    },
     "suggested": "Itinéraire suggéré",
     "allPOI": "Tous les POI",
     "indoor": "Intérieur",
     "outdoor": "Extérieur",
-    "hoursNA": "Horaires non disponibles",
-    "price": "€ {{v}}"
+    "hoursNA": "Toujours ouvert",
+    "price": "€ {{v}}",
+    "priceLabel": "Prix :"
+  },
+  "weather": {
+    "title": "Météo",
+    "detailsFor": "Détails météo pour {{city}} le {{date}}",
+    "map": "Carte météo",
+    "humidity": "Humidité : {{v}}%",
+    "wind": "Vent : {{v}} km/h",
+    "precip": "Précipitations : {{v}} mm",
+    "pressure": "Pression : {{v}} hPa",
+    "uv": "UV : {{v}}",
+    "visibility": "Visibilité : {{v}} m"
   }
 }

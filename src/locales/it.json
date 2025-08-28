@@ -2,9 +2,15 @@
   "tabs": {
     "trip": "Trip",
     "usefulPhrases": "Frasi Utili",
-    "profile": "Profilo"
+    "profile": "Profilo",
+    "weather": "Meteo",
+    "phrases": "Frasi Utili",
+    "diagnostics": "Diagnostica"
   },
-  "intro": { "subtitle": "La tua guida smart e amichevole.", "getStarted": "Inizia" },
+  "intro": {
+    "subtitle": "La tua guida smart e amichevole.",
+    "getStarted": "Inizia"
+  },
   "auth": {
     "title": "Accedi",
     "caption": "Riceverai un link magico via email.",
@@ -25,7 +31,7 @@
   "phrases": {
     "title": "Frasi Utili",
     "usefulTitle": "Frasi Utili",
-    "freeInputPlaceholder": "Scrivi o parla…",
+    "freeInputPlaceholder": "Scrivi o parlaÃ¢â‚¬Â¦",
     "translate": "Traduci",
     "speak": "Parla",
     "yourLangFirst": "Prima nella tua lingua, poi nella lingua locale",
@@ -54,20 +60,20 @@
       "14": "Buona giornata"
     },
     "directions": {
-      "0": "Dov'è la fermata?",
+      "0": "Dov'ÃƒÂ¨ la fermata?",
       "1": "Quanto dista?",
       "2": "A sinistra",
       "3": "A destra",
       "4": "Sempre dritto",
-      "5": "Dov'è il bagno?",
+      "5": "Dov'ÃƒÂ¨ il bagno?",
       "6": "Quanto costa il biglietto?",
       "7": "Mi sono perso",
       "8": "Puoi aiutarmi?",
       "9": "Dove posso prendere un taxi?",
-      "10": "Quale linea è?",
+      "10": "Quale linea ÃƒÂ¨?",
       "11": "Quale binario?",
       "12": "A che ora parte?",
-      "13": "È vicino?",
+      "13": "ÃƒË† vicino?",
       "14": "Me lo mostri sulla mappa"
     },
     "food": {
@@ -76,47 +82,47 @@
       "2": "Senza glutine, grazie",
       "3": "Sono vegetariano",
       "4": "Acqua naturale / frizzante",
-      "5": "È piccante?",
+      "5": "ÃƒË† piccante?",
       "6": "Una birra, per favore",
       "7": "Una bottiglia di vino",
-      "8": "La specialità della casa",
-      "9": "Il menù in inglese, per favore",
+      "8": "La specialitÃƒÂ  della casa",
+      "9": "Il menÃƒÂ¹ in inglese, per favore",
       "10": "Senza frutta secca, grazie",
       "11": "Sono allergico a...",
-      "12": "Posso vedere il menù?",
+      "12": "Posso vedere il menÃƒÂ¹?",
       "13": "Cosa consiglia?",
       "14": "Da asporto, per favore"
     },
     "emergency": {
       "0": "Chiama un'ambulanza!",
       "1": "Ho bisogno di aiuto",
-      "2": "Dov'è l'ospedale?",
+      "2": "Dov'ÃƒÂ¨ l'ospedale?",
       "3": "Ho perso il passaporto",
       "4": "Chiamate la polizia",
-      "5": "C'è stato un furto",
+      "5": "C'ÃƒÂ¨ stato un furto",
       "6": "Mi sento male",
       "7": "Allergia",
-      "8": "Dov'è la farmacia?",
+      "8": "Dov'ÃƒÂ¨ la farmacia?",
       "9": "Serve un medico",
       "10": "Mi fa male qui",
       "11": "Ho bisogno di un interprete",
-      "12": "È un'emergenza",
-      "13": "Può chiamare per me?",
+      "12": "ÃƒË† un'emergenza",
+      "13": "PuÃƒÂ² chiamare per me?",
       "14": "Sono solo"
     },
     "shopping": {
       "0": "Quanto costa?",
-      "1": "È troppo caro",
+      "1": "ÃƒË† troppo caro",
       "2": "Posso provare?",
-      "3": "Una taglia più grande",
-      "4": "Una taglia più piccola",
+      "3": "Una taglia piÃƒÂ¹ grande",
+      "4": "Una taglia piÃƒÂ¹ piccola",
       "5": "Dove si paga?",
       "6": "Accettate carte?",
-      "7": "C'è uno sconto?",
-      "8": "È in saldo?",
+      "7": "C'ÃƒÂ¨ uno sconto?",
+      "8": "ÃƒË† in saldo?",
       "9": "Vorrei questo",
       "10": "Ce l'ha di un altro colore?",
-      "11": "Può incartarlo?",
+      "11": "PuÃƒÂ² incartarlo?",
       "12": "Sto solo guardando",
       "13": "Scontrino, per favore",
       "14": "Posso restituirlo?"
@@ -125,18 +131,33 @@
   "trip": {
     "title": "Trip",
     "today": "Oggi",
-    "weatherFor": "Meteo per {{city}} — {{date}}",
-    "tempMinMax": "min {{min}}° / max {{max}}°",
+    "weatherFor": "Meteo per {{city}} Ã¢â‚¬â€ {{date}}",
+    "tempMinMax": "min {{min}} / max {{max}}",
     "rainProb": "Pioggia {{p}}%",
-    "weatherNA": "Meteo non disponibile",
-    "badWeatherHint": "Pioggia probabile: preferiti itinerari indoor.",
-    "filter": { "all": "Tutti", "indoor": "Indoor", "outdoor": "Outdoor" },
+    "weatherNA": "Dati meteo non disponibili",
+    "badWeatherHint": "Meteo sfavorevole: preferisci attività indoor",
+    "filter": {
+      "all": "Tutti",
+      "indoor": "Indoor",
+      "outdoor": "Outdoor"
+    },
     "suggested": "Itinerario suggerito",
     "allPOI": "Tutti i POI",
     "indoor": "Indoor",
     "outdoor": "Outdoor",
-    "hoursNA": "Orari non disponibili",
-    "price": "€ {{v}}"
+    "hoursNA": "Sempre aperto",
+    "price": "Ã¢â€šÂ¬ {{v}}",
+    "priceLabel": "Prezzo:"
+  },
+  "weather": {
+    "title": "Meteo",
+    "detailsFor": "Dettagli meteo per {{city}} il {{date}}",
+    "map": "Mappa meteo",
+    "humidity": "Umidità: {{v}}%",
+    "wind": "Vento: {{v}} km/h",
+    "precip": "Precipitazioni: {{v}} mm",
+    "pressure": "Pressione: {{v}} hPa",
+    "uv": "UV: {{v}}",
+    "visibility": "Visibilità: {{v}} m"
   }
 }
-
