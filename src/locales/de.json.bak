@@ -1,7 +1,7 @@
 {
   "tabs": {
     "trip": "Tour",
-    "usefulPhrases": "NÒ¼tzliche SÒ¤tze",
+    "usefulPhrases": "NÃƒÂ¼tzliche SÃƒÂ¤tze",
     "profile": "Profil",
     "weather": "Wetter",
     "phrases": "Sätze",
@@ -13,11 +13,11 @@
   },
   "auth": {
     "title": "Anmelden",
-    "caption": "Du erhÒ¤ltst einen Magic Link per E-Mail.",
+    "caption": "Du erhÃƒÂ¤ltst einen Magic Link per E-Mail.",
     "sendLink": "Link senden",
     "error": "Fehler",
     "sent": "Gesendet",
-    "checkInbox": "Posteingang prÒ¼fen."
+    "checkInbox": "Posteingang prÃƒÂ¼fen."
   },
   "profile": {
     "title": "Profil",
@@ -29,13 +29,13 @@
     "email": "E-Mail"
   },
   "phrases": {
-    "usefulTitle": "NÒ¼tzliche SÒ¤tze",
-    "freeInputPlaceholder": "Schreibe, was du sagen mÒ¶chtest �¦",
-    "translate": "Ò�\u001cbersetzen",
+    "usefulTitle": "NÃƒÂ¼tzliche SÃƒÂ¤tze",
+    "freeInputPlaceholder": "Schreibe, was du sagen mÃƒÂ¶chtest Ã¢â‚¬Â¦",
+    "translate": "ÃƒÅ“bersetzen",
     "speak": "Sprechen",
     "yourLangFirst": "Zuerst in deiner Sprache, dann in der Landessprache",
     "cat": {
-      "greetings": "BegrÒ¼ÒŸungen",
+      "greetings": "BegrÃƒÂ¼ÃƒÅ¸ungen",
       "directions": "Wegbeschreibung",
       "food": "Essen & Trinken",
       "emergency": "Notfall",
@@ -53,10 +53,10 @@
       "8": "Auf Wiedersehen",
       "9": "Wie geht es dir?",
       "10": "Mir geht es gut, danke",
-      "11": "Wie heiÒŸt du?",
-      "12": "Ich heiÒŸe...",
+      "11": "Wie heiÃƒÅ¸t du?",
+      "12": "Ich heiÃƒÅ¸e...",
       "13": "Sprichst du Englisch?",
-      "14": "SchÒ¶nen Tag noch"
+      "14": "SchÃƒÂ¶nen Tag noch"
     },
     "directions": {
       "0": "Wo ist die Haltestelle?",
@@ -71,22 +71,22 @@
       "9": "Wo bekomme ich ein Taxi?",
       "10": "Welche Linie ist das?",
       "11": "Welches Gleis?",
-      "12": "Wann fÒ¤hrt es ab?",
-      "13": "Ist es in der NÒ¤he?",
+      "12": "Wann fÃƒÂ¤hrt es ab?",
+      "13": "Ist es in der NÃƒÂ¤he?",
       "14": "Kannst du es mir auf der Karte zeigen?"
     },
     "food": {
-      "0": "Einen Tisch fÒ¼r zwei, bitte",
+      "0": "Einen Tisch fÃƒÂ¼r zwei, bitte",
       "1": "Die Rechnung, bitte",
       "2": "Glutenfrei, bitte",
       "3": "Ich bin Vegetarier",
-      "4": "Wasser still / mit KohlensÒ¤ure",
+      "4": "Wasser still / mit KohlensÃƒÂ¤ure",
       "5": "Ist es scharf?",
       "6": "Ein Bier, bitte",
       "7": "Eine Flasche Wein",
-      "8": "Die HausspezialitÒ¤t",
+      "8": "Die HausspezialitÃƒÂ¤t",
       "9": "Die Speisekarte auf Englisch, bitte",
-      "10": "Ohne NÒ¼sse, bitte",
+      "10": "Ohne NÃƒÂ¼sse, bitte",
       "11": "Ich bin allergisch gegen...",
       "12": "Kann ich die Speisekarte sehen?",
       "13": "Was empfehlen Sie?",
@@ -106,38 +106,31 @@
       "10": "Hier tut es weh",
       "11": "Ich brauche einen Dolmetscher",
       "12": "Das ist ein Notfall",
-      "13": "KÒ¶nnen Sie fÒ¼r mich anrufen?",
+      "13": "KÃƒÂ¶nnen Sie fÃƒÂ¼r mich anrufen?",
       "14": "Ich bin allein"
     },
     "shopping": {
       "0": "Wie viel kostet das?",
       "1": "Das ist zu teuer",
       "2": "Kann ich es anprobieren?",
-      "3": "Eine Nummer grÒ¶ÒŸer",
+      "3": "Eine Nummer grÃƒÂ¶ÃƒÅ¸er",
       "4": "Eine Nummer kleiner",
       "5": "Wo kann ich bezahlen?",
       "6": "Akzeptieren Sie Karten?",
       "7": "Gibt es einen Rabatt?",
       "8": "Ist das im Angebot?",
-      "9": "Ich hÒ¤tte das gerne",
+      "9": "Ich hÃƒÂ¤tte das gerne",
       "10": "Gibt es das in einer anderen Farbe?",
-      "11": "KÒ¶nnen Sie es einpacken?",
+      "11": "KÃƒÂ¶nnen Sie es einpacken?",
       "12": "Ich schaue nur",
       "13": "Kassenbon, bitte",
-      "14": "Kann ich es zurÒ¼ckgeben?"
-    },
-    "title": "Nützliche Sätze",
-    "fromLang": "Deine Sprache",
-    "toLang": "Zielsprache",
-    "free": {
-      "placeholder": "Hier eingeben…",
-      "translate": "Übersetzen"
+      "14": "Kann ich es zurÃƒÂ¼ckgeben?"
     }
   },
   "trip": {
     "title": "Tour",
     "today": "Heute",
-    "weatherFor": "Wetter fÒ¼r {{city}} am {{date}}",
+    "weatherFor": "Wetter fÃƒÂ¼r {{city}} am {{date}}",
     "tempMinMax": "min {{min}} / max {{max}}",
     "rainProb": "Regen {{p}}%",
     "weatherNA": "Keine Wetterdaten verfügbar",
@@ -152,7 +145,7 @@
     "indoor": "Innen",
     "outdoor": "Außen",
     "hoursNA": "Immer geöffnet",
-    "price": "Preis: ��a¬{{v}}",
+    "price": "Preis: Ã¢â€šÂ¬{{v}}",
     "priceLabel": "Preis:"
   },
   "weather": {

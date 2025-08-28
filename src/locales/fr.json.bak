@@ -126,12 +126,6 @@
       "12": "Je regarde seulement",
       "13": "Le reçu, s'il vous plaît",
       "14": "Puis-je le retourner ?"
-    },
-    "fromLang": "Votre langue",
-    "toLang": "Langue de destination",
-    "free": {
-      "placeholder": "Écrivez ici…",
-      "translate": "Traduire"
     }
   },
   "trip": {

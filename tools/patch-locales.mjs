@@ -4,7 +4,7 @@ import path from 'path';
 
 const LOCALES_DIR = path.join(process.cwd(), 'src', 'locales');
 
-// Chiavi da applicare/mergiare per OGNI lingua
+// Base EN + chiavi comuni
 const COMMON_PATCH = {
   tabs: {
     trip: 'Trip',
@@ -32,6 +32,13 @@ const COMMON_PATCH = {
     title: 'Weather',
     detailsFor: 'Weather details for {{city}} on {{date}}',
     map: 'Weather map',
+    dayparts: 'Dayparts',
+    parts: {
+      morning: 'Morning',
+      afternoon: 'Afternoon',
+      evening: 'Evening',
+      night: 'Night'
+    },
     humidity: 'Humidity: {{v}}%',
     wind: 'Wind: {{v}} km/h',
     precip: 'Precipitation: {{v}} mm',
@@ -41,7 +48,7 @@ const COMMON_PATCH = {
   }
 };
 
-// Traduzioni per lingua (sovrascrivono i default EN sopra)
+// Override per lingua
 const PER_LANG = {
   it: {
     tabs: { trip: 'Trip', weather: 'Meteo', phrases: 'Frasi Utili', profile: 'Profilo', diagnostics: 'Diagnostica' },
@@ -64,6 +71,13 @@ const PER_LANG = {
       title: 'Meteo',
       detailsFor: 'Dettagli meteo per {{city}} il {{date}}',
       map: 'Mappa meteo',
+      dayparts: 'Fasce orarie',
+      parts: {
+        morning: 'Mattino',
+        afternoon: 'Pomeriggio',
+        evening: 'Sera',
+        night: 'Notte'
+      },
       humidity: 'Umidità: {{v}}%',
       wind: 'Vento: {{v}} km/h',
       precip: 'Precipitazioni: {{v}} mm',
@@ -93,6 +107,13 @@ const PER_LANG = {
       title: 'Tiempo',
       detailsFor: 'Detalles del tiempo para {{city}} el {{date}}',
       map: 'Mapa del tiempo',
+      dayparts: 'Momentos del día',
+      parts: {
+        morning: 'Mañana',
+        afternoon: 'Tarde',
+        evening: 'Noche',
+        night: 'Madrugada'
+      },
       humidity: 'Humedad: {{v}}%',
       wind: 'Viento: {{v}} km/h',
       precip: 'Precipitación: {{v}} mm',
@@ -122,6 +143,13 @@ const PER_LANG = {
       title: 'Wetter',
       detailsFor: 'Wetterdetails für {{city}} am {{date}}',
       map: 'Wetterkarte',
+      dayparts: 'Tageszeiten',
+      parts: {
+        morning: 'Morgen',
+        afternoon: 'Nachmittag',
+        evening: 'Abend',
+        night: 'Nacht'
+      },
       humidity: 'Luftfeuchtigkeit: {{v}}%',
       wind: 'Wind: {{v}} km/h',
       precip: 'Niederschlag: {{v}} mm',
@@ -151,6 +179,13 @@ const PER_LANG = {
       title: 'Météo',
       detailsFor: 'Détails météo pour {{city}} le {{date}}',
       map: 'Carte météo',
+      dayparts: 'Moments de la journée',
+      parts: {
+        morning: 'Matin',
+        afternoon: 'Après-midi',
+        evening: 'Soir',
+        night: 'Nuit'
+      },
       humidity: 'Humidité : {{v}}%',
       wind: 'Vent : {{v}} km/h',
       precip: 'Précipitations : {{v}} mm',
@@ -173,29 +208,17 @@ function deepMerge(target, patch) {
   }
   return out;
 }
-
-function stripBOM(s) {
-  return s.charCodeAt(0) === 0xFEFF ? s.slice(1) : s;
-}
-
-function loadJSON(p) {
-  const raw = fs.readFileSync(p, 'utf8');
-  return JSON.parse(stripBOM(raw));
-}
-
-function saveJSON(p, obj) {
-  const text = JSON.stringify(obj, null, 2);
-  fs.writeFileSync(p, text, { encoding: 'utf8' }); // UTF-8 no BOM
-}
+function stripBOM(s) { return s.charCodeAt(0) === 0xFEFF ? s.slice(1) : s; }
+function loadJSON(p) { const raw = fs.readFileSync(p, 'utf8'); return JSON.parse(stripBOM(raw)); }
+function saveJSON(p, obj) { fs.writeFileSync(p, JSON.stringify(obj, null, 2), { encoding: 'utf8' }); }
 
 for (const file of fs.readdirSync(LOCALES_DIR).filter(f => f.endsWith('.json'))) {
   const full = path.join(LOCALES_DIR, file);
-  let lang = path.basename(file, '.json').toLowerCase();
+  const lang = path.basename(file, '.json').toLowerCase();
   if (!['it','en','es','de','fr'].includes(lang)) continue;
 
   try {
     const cur = loadJSON(full);
-    // merge: common EN defaults -> then localized overrides for the language
     let merged = deepMerge(cur, COMMON_PATCH);
     if (PER_LANG[lang]) merged = deepMerge(merged, PER_LANG[lang]);
     saveJSON(full, merged);
@@ -205,5 +228,5 @@ for (const file of fs.readdirSync(LOCALES_DIR).filter(f => f.endsWith('.json')))
     process.exitCode = 1;
   }
 }
-
 console.log('Done.');
+

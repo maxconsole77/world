@@ -1,59 +1,60 @@
 import Constants from 'expo-constants';
 
-type Lang = 'it'|'en'|'es'|'de'|'fr';
+type Provider = 'deepl' | 'google' | 'none';
 
-const sleep = (ms:number)=>new Promise(r=>setTimeout(r,ms));
-const backoff = (n:number)=> {
-  const base = Math.min(1000 * (2 ** n), 8000);
-  return base/2 + Math.random()*base/2; // jitter
+const cfg = {
+  provider: (Constants.expoConfig?.extra as any)?.translateProvider
+    || process.env.EXPO_PUBLIC_TRANSLATE_PROVIDER
+    || 'none',
+  deeplKey: (Constants.expoConfig?.extra as any)?.deeplKey
+    || process.env.EXPO_PUBLIC_DEEPL_KEY,
+  googleKey: (Constants.expoConfig?.extra as any)?.googleKey
+    || process.env.EXPO_PUBLIC_GOOGLE_KEY,
 };
 
-export async function translateText(text: string, from: Lang, to: Lang): Promise<string> {
-  if (!text) return '';
-  const extra: any = (Constants as any).expoConfig?.extra || {};
-  const provider = extra.translationProvider || 'none';
-  const key = extra.translationApiKey || '';
+export async function translate(text: string, source: string, target: string): Promise<string> {
+  if (!text.trim()) return '';
+  const provider = (cfg.provider as Provider) || 'none';
 
-  if (provider === 'none' || !key) return text; // fallback “graceful”
-
-  const deepl = async () => {
-    const res = await fetch('https://api-free.deepl.com/v2/translate', {
-      method: 'POST',
-      headers: {
-        'Content-Type':'application/x-www-form-urlencoded',
-        'Authorization': `DeepL-Auth-Key ${key}`
-      },
-      body: `text=${encodeURIComponent(text)}&source_lang=${from.toUpperCase()}&target_lang=${to.toUpperCase()}`
-    });
-    if (!res.ok) throw new Error(String(res.status));
-    const data = await res.json();
-    return data?.translations?.[0]?.text ?? text;
-  };
-
-  const google = async () => {
-    const url = `https://translation.googleapis.com/language/translate/v2?key=${key}`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json' },
-      body: JSON.stringify({ q: text, source: from, target: to, format: 'text' })
-    });
-    if (!res.ok) throw new Error(String(res.status));
-    const data = await res.json();
-    return data?.data?.translations?.[0]?.translatedText ?? text;
-  };
-
-  const exec = provider === 'deepl' ? deepl : google;
-
-  for (let attempt = 0; attempt < 4; attempt++) {
-    try { return await exec(); }
-    catch (e:any) {
-      const code = Number(String(e?.message||'').replace(/\D/g,''));
-      if ([429,500,502,503,504].includes(code) || !code) {
-        await sleep(backoff(attempt));
-        continue;
-      }
-      break;
+  try {
+    if (provider === 'deepl' && cfg.deeplKey) {
+      const res = await fetch('https://api-free.deepl.com/v2/translate', {
+        method: 'POST',
+        headers: {
+          'Authorization': `DeepL-Auth-Key ${cfg.deeplKey}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `text=${encodeURIComponent(text)}&source_lang=${source.toUpperCase()}&target_lang=${target.toUpperCase()}`
+      });
+      const j = await res.json();
+      const out = j?.translations?.[0]?.text;
+      if (out) return out;
     }
+
+    if (provider === 'google' && cfg.googleKey) {
+      const res = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${cfg.googleKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ q: text, source, target, format: 'text' })
+      });
+      const j = await res.json();
+      const out = j?.data?.translations?.[0]?.translatedText;
+      if (out) return out;
+    }
+
+    // Fallback gratuito (LibreTranslate pubblico)
+    const alt = await fetch('https://libretranslate.de/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ q: text, source, target, format: 'text' })
+    });
+    const jj = await alt.json();
+    if (jj?.translatedText) return jj.translatedText;
+
+    // Se anche il fallback fallisce, restituisco l’originale
+    return text;
+  } catch {
+    return text;
   }
-  return text;
 }
+

@@ -13,7 +13,7 @@
   },
   "auth": {
     "title": "Sign in",
-    "caption": "Wèll email you a magic link.",
+    "caption": "We'll email you a magic link.",
     "sendLink": "Send magic link",
     "error": "Error",
     "sent": "Sent",
@@ -31,7 +31,7 @@
   "phrases": {
     "title": "Useful Phrases",
     "usefulTitle": "Useful Phrases",
-    "freeInputPlaceholder": "Type or speak�¦",
+    "freeInputPlaceholder": "Type or speakÃ¢â‚¬Â¦",
     "translate": "Translate",
     "speak": "Speak",
     "yourLangFirst": "First in your language, then local",
@@ -54,7 +54,7 @@
       "8": "Goodbye",
       "9": "How are you?",
       "10": "I'm fine, thanks",
-      "11": "What��\u001e�s your name?",
+      "11": "WhatÃ¢â‚¬â„¢s your name?",
       "12": "My name is...",
       "13": "Do you speak English?",
       "14": "Have a nice day"
@@ -88,7 +88,7 @@
       "8": "House specialty",
       "9": "Menu in English, please",
       "10": "Without nuts, please",
-      "11": "I��\u001e�m allergic to...",
+      "11": "IÃ¢â‚¬â„¢m allergic to...",
       "12": "Can I see the menu?",
       "13": "What do you recommend?",
       "14": "To take away, please"
@@ -106,9 +106,9 @@
       "9": "I need a doctor",
       "10": "It hurts here",
       "11": "I need a translator",
-      "12": "It��\u001e�s an emergency",
+      "12": "ItÃ¢â‚¬â„¢s an emergency",
       "13": "Can you call for me?",
-      "14": "I��\u001e�m alone"
+      "14": "IÃ¢â‚¬â„¢m alone"
     },
     "shopping": {
       "0": "How much is it?",
@@ -123,21 +123,15 @@
       "9": "I'd like this one",
       "10": "Do you have another color?",
       "11": "Can you wrap it?",
-      "12": "I��\u001e�m just looking",
+      "12": "IÃ¢â‚¬â„¢m just looking",
       "13": "Receipt, please",
       "14": "Can I return it?"
-    },
-    "fromLang": "Your language",
-    "toLang": "Destination language",
-    "free": {
-      "placeholder": "Type here…",
-      "translate": "Translate"
     }
   },
   "trip": {
     "title": "Trip",
     "today": "Today",
-    "weatherFor": "Weather for {{city}} — {{date}}",
+    "weatherFor": "Weather for {{city}} Ã¢â‚¬â€ {{date}}",
     "tempMinMax": "min {{min}} / max {{max}}",
     "rainProb": "Rain {{p}}%",
     "weatherNA": "Weather data not available",
@@ -152,7 +146,7 @@
     "indoor": "Indoor",
     "outdoor": "Outdoor",
     "hoursNA": "Always open",
-    "price": "��a¬ {{v}}",
+    "price": "Ã¢â€šÂ¬ {{v}}",
     "priceLabel": "Price:"
   },
   "weather": {

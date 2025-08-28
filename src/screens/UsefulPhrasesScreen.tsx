@@ -1,117 +1,200 @@
-import { speak, ensureVoice } from '../lib/speech'; // ← tienilo se hai rimosso il vecchio import
-import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TextInput, Pressable, Alert, ScrollView } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable, TextInput } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import * as Localization from 'expo-localization';
-import { supabase } from '../lib/supabase';
-import { translateText } from '../lib/translate';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
+import { speak } from '../lib/speech';
+import { translate } from '../lib/translate';
 
-const CATS = ['greetings','directions','food','emergency','shopping'] as const;
-type Cat = typeof CATS[number];
+// lingue supportate (codice i18n)
+const LANGS: { code: string; label: string }[] = [
+  { code: 'it', label: 'IT' },
+  { code: 'en', label: 'EN' },
+  { code: 'es', label: 'ES' },
+  { code: 'de', label: 'DE' },
+  { code: 'fr', label: 'FR' },
+];
+
+// categorie supportate come in locales
+const CATS: { key: keyof typeof catKeys; i18n: string }[] = [
+  { key: 'greetings', i18n: 'phrases.cat.greetings' },
+  { key: 'directions', i18n: 'phrases.cat.directions' },
+  { key: 'food', i18n: 'phrases.cat.food' },
+  { key: 'emergency', i18n: 'phrases.cat.emergency' },
+  { key: 'shopping', i18n: 'phrases.cat.shopping' },
+];
+const catKeys = { greetings: 1, directions: 1, food: 1, emergency: 1, shopping: 1 };
+
+type CatKey = keyof typeof catKeys;
 
 export default function UsefulPhrasesScreen() {
   const { t, i18n } = useTranslation();
-  const [input, setInput] = useState('');
-  const [destLang, setDestLang] = useState<'it'|'en'|'es'|'de'|'fr'>('it');
-  const [cat, setCat] = useState<Cat>('greetings');
 
-  const yourLang = (i18n.language || (Localization.getLocales?.()[0]?.languageCode ?? 'en')) as any;
+  // carico default da profilo salvato (se l’hai già messo in AsyncStorage in ProfileScreen)
+  const [fromLang, setFromLang] = useState('it');
+  const [toLang, setToLang] = useState('en');
+
+  const [cat, setCat] = useState<CatKey>('greetings');
+  const [playingId, setPlayingId] = useState<string | null>(null);
+
+  // input libero
+  const [freeIn, setFreeIn] = useState('');
+  const [freeOut, setFreeOut] = useState('');
+  const inputRef = useRef<TextInput>(null);
 
   useEffect(() => {
     (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-      const { data } = await supabase
-        .from('profiles')
-        .select('destination_language')
-        .eq('id', session.user.id)
-        .single();
-      if (data?.destination_language) setDestLang(data.destination_language);
+      const savedFrom = (await AsyncStorage.getItem('profile.language')) || i18n.language || 'it';
+      const savedTo = (await AsyncStorage.getItem('profile.destinationLanguage')) || 'en';
+      setFromLang(savedFrom.slice(0,2));
+      setToLang(savedTo.slice(0,2));
     })();
-  }, []);
+  }, [i18n.language]);
 
-  const doVoice = async () => {
-    const Voice = await ensureVoice();
-    if (!Voice) return Alert.alert('Dettatura', 'Non disponibile in Expo Go; usa una dev build.');
-    try {
-      await Voice.start(yourLang);
-      Voice.onSpeechResults = (e:any) => { const vals = e.value || []; if (vals[0]) setInput(vals[0]); };
-    } catch (e:any) { Alert.alert('Voce', e?.message || 'Errore'); }
-  };
+  // estraggo le frasi dalle risorse i18n: assumo stesso indice in tutte le lingue
+  const items = useMemo(() => {
+    const src = (i18n.getResource(fromLang, 'translation', `phrases.${cat}`) || {}) as Record<string,string>;
+    const dst = (i18n.getResource(toLang,   'translation', `phrases.${cat}`) || {}) as Record<string,string>;
+    const idxs = Object.keys(src).filter(k => /^\d+$/.test(k)).sort((a,b)=>Number(a)-Number(b));
+    return idxs.map(id => ({
+      id, from: src[id], to: dst[id]
+    }));
+  }, [i18n, fromLang, toLang, cat]);
 
-  const doTranslate = async () => {
-    if (!input.trim()) return;
-    const out = await translateText(input.trim(), yourLang, destLang);
-    Alert.alert('↔︎', out);
-    speak(out, destLang);
-  };
+  async function onTranslateFree() {
+    const txt = freeIn.trim();
+    if (!txt) return;
+    const out = await translate(txt, fromLang, toLang);
+    setFreeOut(out);
+  }
 
-  const data = useMemo(() => Array.from({length: 15}).map((_, i) => i), [cat]);
+  function onSpeak(text: string) {
+    setPlayingId(text); // evidenzio il riquadro
+    speak(text, toLang);
+    setTimeout(() => setPlayingId(null), 1500);
+  }
+
+  function LangChip({code, active, onPress}:{code:string; active:boolean; onPress:()=>void}) {
+    return (
+      <Pressable onPress={onPress} style={[styles.langChip, active && styles.langActive]}>
+        <Text style={[styles.langText, active && styles.langTextActive]}>{code.toUpperCase()}</Text>
+      </Pressable>
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{t('phrases.usefulTitle')}</Text>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 28 }}>
+      <Text style={styles.title}>{t('phrases.title', { defaultValue: 'Frasi Utili' })}</Text>
 
-      {/* Box traduzione in alto */}
-      <View style={styles.transBox}>
-        <TextInput style={styles.input} placeholder={t('phrases.freeInputPlaceholder') as string} value={input} onChangeText={setInput} />
-        <View style={styles.row}>
-          <Pressable style={styles.btn} onPress={doTranslate}><Text style={styles.btnText}>{t('phrases.translate')}</Text></Pressable>
-          <Pressable style={[styles.btnOutline, { marginLeft: 8 }]} onPress={doVoice}><Text style={styles.btnOutlineText}>{t('phrases.speak')}</Text></Pressable>
-        </View>
+      {/* Selettori lingua */}
+      <View style={styles.row}>
+        <Text style={styles.label}>{t('phrases.fromLang', { defaultValue: 'Lingua utente' })}</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {LANGS.map(l => (
+            <LangChip key={'from-'+l.code} code={l.code} active={fromLang===l.code} onPress={()=>setFromLang(l.code)} />
+          ))}
+        </ScrollView>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>{t('phrases.toLang', { defaultValue: 'Lingua destinazione' })}</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {LANGS.map(l => (
+            <LangChip key={'to-'+l.code} code={l.code} active={toLang===l.code} onPress={()=>setToLang(l.code)} />
+          ))}
+        </ScrollView>
       </View>
 
-      {/* Selettore ambito */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.rowScroll}>
+      {/* Input libero + traduzione */}
+      <View style={styles.freeBox}>
+        <TextInput
+          ref={inputRef}
+          value={freeIn}
+          onChangeText={setFreeIn}
+          placeholder={t('phrases.free.placeholder', { defaultValue: 'Scrivi qui…' })}
+          style={styles.input}
+          multiline
+        />
+        <View style={styles.freeActions}>
+          <Pressable onPress={onTranslateFree} style={styles.btnPrimary}>
+            <Text style={styles.btnPrimaryText}>{t('phrases.free.translate', { defaultValue: 'Traduci' })}</Text>
+          </Pressable>
+          <Pressable onPress={() => onSpeak(freeOut || freeIn)} style={styles.btnGhost}>
+            <Ionicons name="volume-high" size={18} color="#0A84FF" />
+            <Text style={styles.btnGhostText}>{(toLang || '—').toUpperCase()}</Text>
+          </Pressable>
+        </View>
+
+        {!!freeOut && (
+          <View style={styles.outputBubble}>
+            <Text style={styles.outputText}>{freeOut}</Text>
+          </View>
+        )}
+      </View>
+
+      {/* Categorie */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingVertical: 8 }}>
         {CATS.map(c => (
-          <Pressable key={c} onPress={() => setCat(c)} style={[styles.chip, cat===c && styles.chipActive]}>
-            <Text style={[styles.chipText, cat===c && styles.chipTextActive]}>{t(`phrases.cat.${c}`)}</Text>
+          <Pressable key={String(c.key)} onPress={()=>setCat(c.key)} style={[styles.catChip, cat===c.key && styles.catActive]}>
+            <Text style={[styles.catText, cat===c.key && styles.catTextActive]}>{t(c.i18n)}</Text>
           </Pressable>
         ))}
       </ScrollView>
 
-      {/* Lista frasi per ambito: tua lingua -> lingua destinazione */}
-      <FlatList
-        data={data}
-        keyExtractor={(i) => `${cat}-${i}`}
-        renderItem={({ item: i }) => {
-          const from = t(`phrases.${cat}.${i}`);
-          const to = t(`phrases.${cat}.${i}`, { lng: destLang });
+      {/* Elenco frasi */}
+      <View style={{ gap: 10 }}>
+        {items.map(it => {
+          const active = playingId === it.to;
           return (
-            <View style={styles.card}>
-              <View style={{ flex:1 }}>
-                <Text style={styles.line}>• {from}</Text>
-                <Text style={styles.sub}>{to}</Text>
-              </View>
-              <Pressable style={styles.play} onPress={() => speak(to, destLang)}>
-                <Text style={{ color: 'white' }}>▶</Text>
+            <View key={it.id} style={[styles.card, active && styles.cardActive]}>
+              {/* TTS a sinistra */}
+              <Pressable onPress={() => onSpeak(it.to)} style={styles.ttsBtn}>
+                <Ionicons name="play" size={18} color="#111" />
+                <Text style={styles.ttsCode}>{toLang.toUpperCase()}</Text>
               </Pressable>
+
+              <View style={{ flex: 1 }}>
+                <Text selectable style={styles.lineFrom}>{it.from}</Text>
+                <Text selectable style={styles.lineTo}>{it.to}</Text>
+              </View>
             </View>
           );
-        }}
-        contentContainerStyle={{ paddingBottom: 16 }}
-      />
-    </View>
+        })}
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container:{flex:1,padding:16,backgroundColor:'#F8F9FA'},
-  title:{fontSize:24,fontWeight:'800',color:'#111',marginBottom:8},
+  container:{ flex:1, padding:16, backgroundColor:'#F8F9FA' },
+  title:{ fontSize:24, fontWeight:'800', color:'#111', marginBottom:8 },
 
-  transBox:{backgroundColor:'white',borderRadius:12,padding:12,borderWidth:1,borderColor:'#eee', marginBottom:8},
-  input:{borderWidth:1,borderColor:'#ddd',borderRadius:12,padding:12,backgroundColor:'#fff',marginBottom:8},
-  row:{flexDirection:'row', alignItems:'center'},
-  rowScroll:{paddingVertical:8, paddingRight:8},
-  btn:{backgroundColor:'#0A84FF',padding:12,borderRadius:12,alignItems:'center'},
-  btnText:{color:'white',fontWeight:'700'},
-  btnOutline:{borderWidth:1,borderColor:'#0A84FF',padding:12,borderRadius:12,alignItems:'center'},
-  btnOutlineText:{color:'#0A84FF',fontWeight:'700'},
+  row:{ marginTop:6, marginBottom:2 },
+  label:{ fontWeight:'700', color:'#111', marginBottom:6 },
 
-  chip:{paddingVertical:8,paddingHorizontal:12,borderRadius:20,borderColor:'#0A84FF',borderWidth:1,backgroundColor:'white',marginRight:8},
-  chipActive:{backgroundColor:'#0A84FF'}, chipText:{color:'#0A84FF'}, chipTextActive:{color:'white',fontWeight:'700'},
+  langChip:{ paddingVertical:6, paddingHorizontal:12, borderRadius:16, borderWidth:1, borderColor:'#0A84FF', backgroundColor:'#fff', marginRight:8 },
+  langActive:{ backgroundColor:'#0A84FF' },
+  langText:{ color:'#0A84FF', fontWeight:'700' },
+  langTextActive:{ color:'#fff', fontWeight:'700' },
 
-  card:{backgroundColor:'white',borderRadius:12,padding:12,marginBottom:8,borderWidth:1,borderColor:'#eee', flexDirection:'row', alignItems:'center'},
-  line:{color:'#111'}, sub:{color:'#333',opacity:0.85,fontSize:12},
-  play:{width:32,height:32,borderRadius:16,backgroundColor:'#0A84FF',alignItems:'center',justifyContent:'center', marginLeft:8},
+  freeBox:{ backgroundColor:'#fff', borderRadius:12, borderWidth:1, borderColor:'#eee', padding:10, marginTop:10 },
+  input:{ minHeight:60, fontSize:16, color:'#111' },
+  freeActions:{ flexDirection:'row', alignItems:'center', gap:10, marginTop:8 },
+  btnPrimary:{ backgroundColor:'#0A84FF', paddingVertical:8, paddingHorizontal:12, borderRadius:10 },
+  btnPrimaryText:{ color:'#fff', fontWeight:'700' },
+  btnGhost:{ flexDirection:'row', alignItems:'center', gap:6, paddingVertical:6, paddingHorizontal:10, borderRadius:10, borderWidth:1, borderColor:'#0A84FF', backgroundColor:'#fff' },
+  btnGhostText:{ color:'#0A84FF', fontWeight:'700' },
+
+  catChip:{ paddingVertical:8, paddingHorizontal:12, borderRadius:20, borderWidth:1, borderColor:'#0A84FF', backgroundColor:'#fff', marginRight:8 },
+  catActive:{ backgroundColor:'#0A84FF' },
+  catText:{ color:'#0A84FF', fontWeight:'700' },
+  catTextActive:{ color:'#fff', fontWeight:'700' },
+
+  card:{ flexDirection:'row', gap:12, backgroundColor:'#fff', borderRadius:12, borderWidth:1, borderColor:'#eee', padding:12 },
+  cardActive:{ borderColor:'#0A84FF', borderWidth:2, shadowColor:'#0A84FF', shadowOpacity:0.15, shadowRadius:8, shadowOffset:{ width:0, height:2 } },
+  ttsBtn:{ width:64, height:64, borderRadius:12, backgroundColor:'#F1F5F9', alignItems:'center', justifyContent:'center', gap:2 },
+  ttsCode:{ fontSize:12, color:'#111', fontWeight:'700' },
+
+  lineFrom:{ fontSize:16, color:'#111', fontWeight:'700' },
+  lineTo:{ fontSize:14, color:'#4B5563', marginTop:2 }
 });
+
