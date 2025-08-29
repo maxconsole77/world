@@ -15,7 +15,10 @@ export function speak(text: string, lang: string) {
     Speech.stop();
     Speech.speak(text, { language: voice, rate: 1.0, pitch: 1.0 });
   } catch {
-    // silent fallback
+    // no-op
   }
 }
 
+export function stopSpeak() {
+  try { Speech.stop(); } catch {}
+}
