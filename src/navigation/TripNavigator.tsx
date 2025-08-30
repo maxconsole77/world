@@ -1,9 +1,6 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import {
-  createNativeStackNavigator,
-  NativeStackNavigationOptions,
-} from '@react-navigation/native-stack';
+import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 
 import TripSetupScreen from '../screens/trip/TripSetupScreen';
 import TripItineraryDayScreen from '../screens/trip/TripItineraryDayScreen';
@@ -27,11 +24,10 @@ export type TripStackParamList = {
 
 const Stack = createNativeStackNavigator<TripStackParamList>();
 
-const defaultScreenOptions: NativeStackNavigationOptions = {
+const opts: NativeStackNavigationOptions = {
   headerShown: true,
-  headerLargeTitle: Platform.OS === 'ios',
+  headerLargeTitle: false, // header compatto su iOS
   headerTitleStyle: { fontSize: 17, fontWeight: '600' },
-  headerLargeTitleStyle: Platform.OS === 'ios' ? { fontSize: 34, fontWeight: '700' } : undefined,
   contentStyle: { padding: 16, backgroundColor: '#fff' },
   gestureEnabled: true,
   gestureResponseDistance: 35,
@@ -41,7 +37,7 @@ const defaultScreenOptions: NativeStackNavigationOptions = {
 
 export default function TripNavigator() {
   return (
-    <Stack.Navigator screenOptions={defaultScreenOptions}>
+    <Stack.Navigator screenOptions={opts}>
       <Stack.Screen name="Setup" component={TripSetupScreen} options={{ title: 'Setup' }} />
       <Stack.Screen name="ItineraryDay" component={TripItineraryDayScreen} options={{ title: 'Itinerario' }} />
       <Stack.Screen name="Documents" component={DocumentsScreen} options={{ title: 'Documenti' }} />
@@ -53,3 +49,4 @@ export default function TripNavigator() {
     </Stack.Navigator>
   );
 }
+
