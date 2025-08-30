@@ -4,7 +4,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import TripScreen from '../screens/TripScreen';
 import UsefulPhrasesScreen from '../screens/UsefulPhrasesScreen';
-import ProfileScreen from '../screens/ProfileScreen';
 import WeatherScreen from '../screens/WeatherScreen';
 import i18n from '../lib/i18n';
 
@@ -12,7 +11,12 @@ const Tab = createBottomTabNavigator();
 
 export default function RootNavigator() {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarLabelStyle: { fontSize: 12 },
+      }}
+    >
       <Tab.Screen
         name="Trip"
         component={TripScreen}
@@ -21,14 +25,7 @@ export default function RootNavigator() {
           tabBarIcon: ({ color, size }) => <Ionicons name="map" color={color} size={size} />,
         }}
       />
-      <Tab.Screen
-        name="Weather"
-        component={WeatherScreen}
-        options={{
-          title: i18n.t('tabs.weather', { defaultValue: 'Weather' }),
-          tabBarIcon: ({ color, size }) => <Ionicons name="cloud" color={color} size={size} />,
-        }}
-      />
+
       <Tab.Screen
         name="Phrases"
         component={UsefulPhrasesScreen}
@@ -37,12 +34,13 @@ export default function RootNavigator() {
           tabBarIcon: ({ color, size }) => <Ionicons name="chatbubbles" color={color} size={size} />,
         }}
       />
+
       <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
+        name="Weather"
+        component={WeatherScreen}
         options={{
-          title: i18n.t('tabs.profile', { defaultValue: 'Profile' }),
-          tabBarIcon: ({ color, size }) => <Ionicons name="person" color={color} size={size} />,
+          title: i18n.t('tabs.weather', { defaultValue: 'Weather' }),
+          tabBarIcon: ({ color, size }) => <Ionicons name="cloud" color={color} size={size} />,
         }}
       />
     </Tab.Navigator>
