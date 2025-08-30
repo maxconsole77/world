@@ -26,7 +26,7 @@ const Stack = createNativeStackNavigator<TripStackParamList>();
 
 const opts: NativeStackNavigationOptions = {
   headerShown: true,
-  headerLargeTitle: false, // header compatto su iOS
+  headerLargeTitle: false,
   headerTitleStyle: { fontSize: 17, fontWeight: '600' },
   contentStyle: { padding: 16, backgroundColor: '#fff' },
   gestureEnabled: true,
@@ -49,4 +49,3 @@ export default function TripNavigator() {
     </Stack.Navigator>
   );
 }
-

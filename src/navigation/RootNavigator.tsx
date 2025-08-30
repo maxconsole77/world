@@ -4,11 +4,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
 import TripNavigator from './TripNavigator';
-
-// ⬇️ Questi import puntano ai percorsi standard presenti nel progetto originale.
-// Se nel tuo repo i file sono in un path diverso, modifica SOLO queste due righe.
-import PhrasesScreen from '../screens/phrases/PhrasesScreen';
-import WeatherScreen from '../screens/weather/WeatherScreen';
+import PhrasesScreen from '../screens/PhrasesScreen';
+import WeatherScreen from '../screens/WeatherScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -58,11 +55,6 @@ export default function RootNavigator() {
           ),
         }}
       />
-
-      {/*
-        Per evitare regressioni, rimuoviamo i tab "Login" e "Settings".
-        L’accesso/gestione account resta raggiungibile da schermate interne.
-      */}
     </Tab.Navigator>
   );
 }
