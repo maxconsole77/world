@@ -29,13 +29,10 @@ const Stack = createNativeStackNavigator<TripStackParamList>();
 
 const defaultScreenOptions: NativeStackNavigationOptions = {
   headerShown: true,
-  // iOS large title abilitato solo su iOS, con dimensioni numeriche
   headerLargeTitle: Platform.OS === 'ios',
   headerTitleStyle: { fontSize: 17, fontWeight: '600' },
   headerLargeTitleStyle: Platform.OS === 'ios' ? { fontSize: 34, fontWeight: '700' } : undefined,
-  // stile contenuto con padding numerico
-  contentStyle: { padding: 16, backgroundColor: 'white' },
-  // gesture & animazioni sicure
+  contentStyle: { padding: 16, backgroundColor: '#fff' },
   gestureEnabled: true,
   gestureResponseDistance: 35,
   headerBackTitleVisible: false,

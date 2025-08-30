@@ -6,6 +6,8 @@ import TripScreen from '../screens/TripScreen';
 import UsefulPhrasesScreen from '../screens/UsefulPhrasesScreen';
 import WeatherScreen from '../screens/WeatherScreen';
 import i18n from '../lib/i18n';
+import PhrasesScreen from '../screens/PhrasesScreen';
+import WeatherScreen from '../components/WeatherMap';
 
 const Tab = createBottomTabNavigator();
 
