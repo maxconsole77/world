@@ -2,33 +2,38 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, FlatList, ScrollView } from 'react-native';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
-import Constants from 'expo-constants';
+
 import { getDailyWeather, WeatherSummary } from '../lib/weather';
 import { POI, POIS, CityKey, CITIES } from '../data/pois';
+import i18nInstance from '../lib/i18n';
 
 type Filter = 'all' | 'indoor' | 'outdoor';
 
+function Chip({ label, active, onPress, small = false }: { label: string | undefined; active: boolean; onPress: () => void; small?: boolean; }) {
+  return (
+    <Pressable onPress={onPress} style={[small ? styles.chipSmall : styles.chip, active && styles.chipActive]}>
+      <Text style={[small ? styles.chipTextSmall : styles.chipText, active && styles.chipTextActive]}>
+        {label && label.trim() ? label : '—'}
+      </Text>
+    </Pressable>
+  );
+}
+
+const LangToLocale: Record<string, string> = { it:'it-IT', en:'en-US', es:'es-ES', de:'de-DE', fr:'fr-FR' };
+
 export default function TripScreen() {
   const { t } = useTranslation();
+
   const [city, setCity] = useState<CityKey>('rome');
   const [selectedDay, setSelectedDay] = useState<number>(0);
   const [filter, setFilter] = useState<Filter>('all');
   const [weather, setWeather] = useState<WeatherSummary | null>(null);
+
   const date = useMemo(() => dayjs().add(selectedDay, 'day'), [selectedDay]);
 
   useEffect(() => {
     (async () => {
       try {
-        const isExpoGo =
-          (Constants as any)?.appOwnership === 'expo' ||
-          (Constants as any)?.executionEnvironment === 'storeClient';
-
-        if (isExpoGo) {
-          // Evita chiamate/metodi che possono causare crash in Expo Go
-          setWeather(null);
-          return;
-        }
-
         const c = CITIES[city];
         const w = await getDailyWeather(c.lat, c.lon, date.toDate());
         setWeather(w);
@@ -72,59 +77,39 @@ export default function TripScreen() {
     return picked;
   }, [filtered, isBadWeather]);
 
+  const curLang = (i18nInstance as any)?.language?.split?.('-')?.[0] || 'en';
+  const locale = LangToLocale[curLang] || 'en-US';
+  const fmtEUR = (n: number) => new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{t('trip.title')}</Text>
+      <Text style={styles.title}>{t('trip.title', { defaultValue: 'Trip' })}</Text>
 
+      {/* Città */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.rowScroll}>
         {(Object.keys(CITIES) as CityKey[]).map(key => (
-          <Pressable key={key} onPress={() => setCity(key)} style={[styles.chip, city === key && styles.chipActive]}>
-            <Text style={[styles.chipText, city === key && styles.chipTextActive]}>{CITIES[key].label}</Text>
-          </Pressable>
+          <Chip key={key} label={CITIES[key].label} active={city === key} onPress={() => setCity(key)} />
         ))}
       </ScrollView>
 
+      {/* Giorni */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.rowScroll}>
         {Array.from({ length: 10 }).map((_, i) => {
           const d = dayjs().add(i, 'day');
-          const label = i === 0 ? t('trip.today') : d.format('DD MMM');
-          const active = i === selectedDay;
-          return (
-            <Pressable key={i} onPress={() => setSelectedDay(i)} style={[styles.chip, active && styles.chipActive]}>
-              <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
-            </Pressable>
-          );
+          const label = i === 0 ? t('trip.today', { defaultValue: 'Oggi' }) : d.format('DD MMM');
+          return <Chip key={i} label={label} active={i === selectedDay} onPress={() => setSelectedDay(i)} />;
         })}
       </ScrollView>
 
-      <View style={styles.weatherBox}>
-        <Text style={styles.weatherTitle}>
-          {t('trip.weatherFor', { city: CITIES[city].label, date: date.format('DD MMM') })}
-        </Text>
-        {weather ? (
-          <Text style={styles.weatherLine}>
-            {weather.summary} —{' '}
-            {t('trip.tempMinMax', {
-              min: Math.round(weather.tmin ?? 0),
-              max: Math.round(weather.tmax ?? 0),
-            })}
-            {!!weather.precipProb && ` — ${t('trip.rainProb', { p: Math.round(weather.precipProb) })}`}
-          </Text>
-        ) : (
-          <Text style={styles.weatherLineMuted}>{t('trip.weatherNA')}</Text>
-        )}
-        {isBadWeather && <Text style={styles.badWeather}>{t('trip.badWeatherHint')}</Text>}
-      </View>
-
+      {/* Filtri */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.rowScroll}>
-        {(['all', 'indoor', 'outdoor'] as Filter[]).map(f => (
-          <Pressable key={f} onPress={() => setFilter(f)} style={[styles.chipSmall, filter === f && styles.chipActive]}>
-            <Text style={[styles.chipTextSmall, filter === f && styles.chipTextActive]}>{t(`trip.filter.${f}`)}</Text>
-          </Pressable>
+        {(['all', 'indoor', 'outdoor'] as const).map(f => (
+          <Chip key={f} small label={t(`trip.filter.${f}`, { defaultValue: f === 'all' ? 'Tutti' : f })} active={filter === f} onPress={() => setFilter(f)} />
         ))}
       </ScrollView>
 
-      <Text style={styles.sectionTitle}>{t('trip.suggested')}</Text>
+      {/* Suggeriti */}
+      <Text style={styles.sectionTitle}>{t('trip.suggested', { defaultValue: 'Itinerario suggerito' })}</Text>
       <FlatList
         data={suggested}
         keyExtractor={p => p.id}
@@ -133,9 +118,9 @@ export default function TripScreen() {
             <View style={{ flex: 1 }}>
               <Text style={styles.poiName}>{item.name}</Text>
               <Text style={styles.poiMeta}>
-                {item.category} • {item.indoor ? t('trip.indoor') : t('trip.outdoor')} • {item.hours ?? t('trip.hoursNA')}
+                {item.category} • {item.indoor ? t('trip.indoor', { defaultValue: 'Indoor' }) : t('trip.outdoor', { defaultValue: 'Outdoor' })} • {item.hours ?? t('trip.hoursNA', { defaultValue: 'Sempre aperto' })}
               </Text>
-              {!!item.price && <Text style={styles.poiPrice}>{t('trip.price', { v: item.price })}</Text>}
+              {!!item.price && <Text style={styles.poiPrice}>{t('trip.priceLabel', { defaultValue: 'Prezzo:' })} {fmtEUR(item.price)}</Text>}
               {!!item.tags?.length && <Text style={styles.poiTags}>{item.tags.map(tg => `#${tg}`).join(' ')}</Text>}
             </View>
           </View>
@@ -143,7 +128,8 @@ export default function TripScreen() {
         contentContainerStyle={{ paddingBottom: 16 }}
       />
 
-      <Text style={styles.sectionTitle}>{t('trip.allPOI')}</Text>
+      {/* Tutti i POI */}
+      <Text style={styles.sectionTitle}>{t('trip.allPOI', { defaultValue: 'Tutti i POI' })}</Text>
       <FlatList
         data={filtered}
         keyExtractor={p => 'all-' + p.id}
@@ -151,7 +137,7 @@ export default function TripScreen() {
           <View style={styles.cardSm}>
             <Text style={styles.poiNameSm}>{item.name}</Text>
             <Text style={styles.poiMetaSm}>
-              {item.category} • {item.indoor ? t('trip.indoor') : t('trip.outdoor')} • {item.hours ?? t('trip.hoursNA')}
+              {item.category} • {item.indoor ? t('trip.indoor', { defaultValue: 'Indoor' }) : t('trip.outdoor', { defaultValue: 'Outdoor' })} • {item.hours ?? t('trip.hoursNA', { defaultValue: 'Sempre aperto' })}
             </Text>
           </View>
         )}
@@ -173,6 +159,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     backgroundColor: 'white',
     marginRight: 8,
+    minWidth: 64,
+    alignItems: 'center'
   },
   chipSmall: {
     paddingVertical: 6,
@@ -182,17 +170,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     backgroundColor: 'white',
     marginRight: 8,
+    minWidth: 56,
+    alignItems: 'center'
   },
   chipActive: { backgroundColor: '#0A84FF' },
   chipText: { color: '#0A84FF', fontWeight: '700' },
   chipTextActive: { color: 'white', fontWeight: '700' },
   chipTextSmall: { color: '#0A84FF' },
-
-  weatherBox: { backgroundColor: 'white', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#eee', marginBottom: 8 },
-  weatherTitle: { fontWeight: '700', marginBottom: 4, color: '#111' },
-  weatherLine: { color: '#111' },
-  weatherLineMuted: { color: '#666', fontStyle: 'italic' },
-  badWeather: { marginTop: 4, color: '#D9480F', fontWeight: '700' },
 
   sectionTitle: { marginTop: 8, marginBottom: 6, fontSize: 16, fontWeight: '700', color: '#111' },
 
@@ -204,5 +188,5 @@ const styles = StyleSheet.create({
 
   cardSm: { backgroundColor: 'white', borderRadius: 12, padding: 10, borderWidth: 1, borderColor: '#eee', marginBottom: 8 },
   poiNameSm: { fontWeight: '700', color: '#111' },
-  poiMetaSm: { color: '#333', opacity: 0.9, marginTop: 2 },
+  poiMetaSm: { color: '#333', opacity: 0.9, marginTop: 2 }
 });

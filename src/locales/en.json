@@ -2,12 +2,18 @@
   "tabs": {
     "trip": "Trip",
     "usefulPhrases": "Useful Phrases",
-    "profile": "Profile"
+    "profile": "Profile",
+    "weather": "Weather",
+    "phrases": "Phrases",
+    "diagnostics": "Diagnostics"
   },
-  "intro": { "subtitle": "Your smart, friendly travel guide.", "getStarted": "Get Started" },
+  "intro": {
+    "subtitle": "Your smart, friendly travel guide.",
+    "getStarted": "Get Started"
+  },
   "auth": {
     "title": "Sign in",
-    "caption": "We'll email you a magic link.",
+    "caption": "Wèll email you a magic link.",
     "sendLink": "Send magic link",
     "error": "Error",
     "sent": "Sent",
@@ -25,7 +31,7 @@
   "phrases": {
     "title": "Useful Phrases",
     "usefulTitle": "Useful Phrases",
-    "freeInputPlaceholder": "Type or speak…",
+    "freeInputPlaceholder": "Type or speak�¦",
     "translate": "Translate",
     "speak": "Speak",
     "yourLangFirst": "First in your language, then local",
@@ -48,7 +54,7 @@
       "8": "Goodbye",
       "9": "How are you?",
       "10": "I'm fine, thanks",
-      "11": "What’s your name?",
+      "11": "What��\u001e�s your name?",
       "12": "My name is...",
       "13": "Do you speak English?",
       "14": "Have a nice day"
@@ -82,7 +88,7 @@
       "8": "House specialty",
       "9": "Menu in English, please",
       "10": "Without nuts, please",
-      "11": "I’m allergic to...",
+      "11": "I��\u001e�m allergic to...",
       "12": "Can I see the menu?",
       "13": "What do you recommend?",
       "14": "To take away, please"
@@ -100,9 +106,9 @@
       "9": "I need a doctor",
       "10": "It hurts here",
       "11": "I need a translator",
-      "12": "It’s an emergency",
+      "12": "It��\u001e�s an emergency",
       "13": "Can you call for me?",
-      "14": "I’m alone"
+      "14": "I��\u001e�m alone"
     },
     "shopping": {
       "0": "How much is it?",
@@ -117,25 +123,47 @@
       "9": "I'd like this one",
       "10": "Do you have another color?",
       "11": "Can you wrap it?",
-      "12": "I’m just looking",
+      "12": "I��\u001e�m just looking",
       "13": "Receipt, please",
       "14": "Can I return it?"
+    },
+    "fromLang": "Your language",
+    "toLang": "Destination language",
+    "free": {
+      "placeholder": "Type here…",
+      "translate": "Translate"
     }
   },
   "trip": {
     "title": "Trip",
     "today": "Today",
     "weatherFor": "Weather for {{city}} — {{date}}",
-    "tempMinMax": "min {{min}}° / max {{max}}°",
+    "tempMinMax": "min {{min}} / max {{max}}",
     "rainProb": "Rain {{p}}%",
-    "weatherNA": "Weather not available",
-    "badWeatherHint": "Rain likely: prioritizing indoor activities.",
-    "filter": { "all": "All", "indoor": "Indoor", "outdoor": "Outdoor" },
-    "suggested": "Suggested Itinerary",
+    "weatherNA": "Weather data not available",
+    "badWeatherHint": "Bad weather: prefer indoor activities",
+    "filter": {
+      "all": "All",
+      "indoor": "Indoor",
+      "outdoor": "Outdoor"
+    },
+    "suggested": "Suggested itinerary",
     "allPOI": "All POIs",
     "indoor": "Indoor",
     "outdoor": "Outdoor",
-    "hoursNA": "Hours not available",
-    "price": "€ {{v}}"
+    "hoursNA": "Always open",
+    "price": "��a¬ {{v}}",
+    "priceLabel": "Price:"
+  },
+  "weather": {
+    "title": "Weather",
+    "detailsFor": "Weather details for {{city}} on {{date}}",
+    "map": "Weather map",
+    "humidity": "Humidity: {{v}}%",
+    "wind": "Wind: {{v}} km/h",
+    "precip": "Precipitation: {{v}} mm",
+    "pressure": "Pressure: {{v}} hPa",
+    "uv": "UV: {{v}}",
+    "visibility": "Visibility: {{v}} m"
   }
 }

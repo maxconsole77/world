@@ -1,0 +1,163 @@
+{
+  "tabs": {
+    "trip": "Trip",
+    "usefulPhrases": "Useful Phrases",
+    "profile": "Profile",
+    "weather": "Weather",
+    "phrases": "Phrases",
+    "diagnostics": "Diagnostics"
+  },
+  "intro": {
+    "subtitle": "Your smart, friendly travel guide.",
+    "getStarted": "Get Started"
+  },
+  "auth": {
+    "title": "Sign in",
+    "caption": "We'll email you a magic link.",
+    "sendLink": "Send magic link",
+    "error": "Error",
+    "sent": "Sent",
+    "checkInbox": "Check your inbox."
+  },
+  "profile": {
+    "title": "Profile",
+    "language": "Your language",
+    "destinationLanguage": "Destination language",
+    "save": "Save",
+    "saved": "Profile updated",
+    "signOut": "Sign out",
+    "email": "Email"
+  },
+  "phrases": {
+    "title": "Useful Phrases",
+    "usefulTitle": "Useful Phrases",
+    "freeInputPlaceholder": "Type or speakÃ¢â‚¬Â¦",
+    "translate": "Translate",
+    "speak": "Speak",
+    "yourLangFirst": "First in your language, then local",
+    "cat": {
+      "greetings": "Greetings",
+      "directions": "Directions",
+      "food": "Food & Drinks",
+      "emergency": "Emergency",
+      "shopping": "Shopping"
+    },
+    "greetings": {
+      "0": "Hello!",
+      "1": "Good morning",
+      "2": "Good evening",
+      "3": "Please",
+      "4": "Thank you",
+      "5": "Excuse me",
+      "6": "Nice to meet you",
+      "7": "See you soon",
+      "8": "Goodbye",
+      "9": "How are you?",
+      "10": "I'm fine, thanks",
+      "11": "WhatÃ¢â‚¬â„¢s your name?",
+      "12": "My name is...",
+      "13": "Do you speak English?",
+      "14": "Have a nice day"
+    },
+    "directions": {
+      "0": "Where is the stop?",
+      "1": "How far is it?",
+      "2": "Left",
+      "3": "Right",
+      "4": "Straight ahead",
+      "5": "Where is the restroom?",
+      "6": "How much is the ticket?",
+      "7": "I'm lost",
+      "8": "Can you help me?",
+      "9": "Where can I get a taxi?",
+      "10": "Which line is it?",
+      "11": "Which platform?",
+      "12": "At what time does it leave?",
+      "13": "Is it near?",
+      "14": "Show me on the map"
+    },
+    "food": {
+      "0": "A table for two, please",
+      "1": "The bill, please",
+      "2": "Gluten-free, please",
+      "3": "I'm vegetarian",
+      "4": "Still / sparkling water",
+      "5": "Is it spicy?",
+      "6": "A beer, please",
+      "7": "A bottle of wine",
+      "8": "House specialty",
+      "9": "Menu in English, please",
+      "10": "Without nuts, please",
+      "11": "IÃ¢â‚¬â„¢m allergic to...",
+      "12": "Can I see the menu?",
+      "13": "What do you recommend?",
+      "14": "To take away, please"
+    },
+    "emergency": {
+      "0": "Call an ambulance!",
+      "1": "I need help",
+      "2": "Where is the hospital?",
+      "3": "I've lost my passport",
+      "4": "Call the police",
+      "5": "There was a theft",
+      "6": "I feel sick",
+      "7": "Allergy",
+      "8": "Where is the pharmacy?",
+      "9": "I need a doctor",
+      "10": "It hurts here",
+      "11": "I need a translator",
+      "12": "ItÃ¢â‚¬â„¢s an emergency",
+      "13": "Can you call for me?",
+      "14": "IÃ¢â‚¬â„¢m alone"
+    },
+    "shopping": {
+      "0": "How much is it?",
+      "1": "That's too expensive",
+      "2": "Can I try it on?",
+      "3": "One size bigger",
+      "4": "One size smaller",
+      "5": "Where do I pay?",
+      "6": "Do you take cards?",
+      "7": "Is there a discount?",
+      "8": "Is it on sale?",
+      "9": "I'd like this one",
+      "10": "Do you have another color?",
+      "11": "Can you wrap it?",
+      "12": "IÃ¢â‚¬â„¢m just looking",
+      "13": "Receipt, please",
+      "14": "Can I return it?"
+    }
+  },
+  "trip": {
+    "title": "Trip",
+    "today": "Today",
+    "weatherFor": "Weather for {{city}} Ã¢â‚¬â€ {{date}}",
+    "tempMinMax": "min {{min}} / max {{max}}",
+    "rainProb": "Rain {{p}}%",
+    "weatherNA": "Weather data not available",
+    "badWeatherHint": "Bad weather: prefer indoor activities",
+    "filter": {
+      "all": "All",
+      "indoor": "Indoor",
+      "outdoor": "Outdoor"
+    },
+    "suggested": "Suggested itinerary",
+    "allPOI": "All POIs",
+    "indoor": "Indoor",
+    "outdoor": "Outdoor",
+    "hoursNA": "Always open",
+    "price": "Ã¢â€šÂ¬ {{v}}",
+    "priceLabel": "Price:"
+  },
+  "weather": {
+    "title": "Weather",
+    "detailsFor": "Weather details for {{city}} on {{date}}",
+    "map": "Weather map",
+    "humidity": "Humidity: {{v}}%",
+    "wind": "Wind: {{v}} km/h",
+    "precip": "Precipitation: {{v}} mm",
+    "pressure": "Pressure: {{v}} hPa",
+    "uv": "UV: {{v}}",
+    "visibility": "Visibility: {{v}} m"
+  }
+}

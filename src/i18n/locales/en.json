@@ -1,0 +1,17 @@
+{
+  "auth_title": "Sign in or create account",
+  "logout": "Log out",
+  "trip": "Trip",
+  "media": "Media",
+  "documents": "Documents",
+  "checklist": "Checklist",
+  "social": "Social",
+  "audio": "Audio",
+  "setup_trip": "Setup trip",
+  "itinerary_day": "Itinerary (day)",
+  "people_invites": "People & Invites",
+  "upload": "Upload",
+  "share_external": "Share externally",
+  "manage_providers": "Manage providers",
+  "add_to_daypart": "Add to Daypart"
+}

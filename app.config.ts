@@ -1,56 +1,31 @@
-// app.config.ts
-import 'dotenv/config';
-import type { ExpoConfig } from 'expo/config';
-import fs from 'fs';
-import path from 'path';
-
-const exists = (p: string) => fs.existsSync(path.resolve(__dirname, p));
+import { ExpoConfig } from 'expo/config';
 
 const config: ExpoConfig = {
   name: 'World',
-  slug: 'world',
+  slug: 'world-trip-addon',
   scheme: 'world',
-  version: '0.3.1',
+  version: '1.0.0',
   orientation: 'portrait',
-
-  // Usa icone/splash solo se esistono (evita errori)
-  icon: exists('./assets/icon.png') ? './assets/icon.png' : undefined,
+  icon: './assets/icon.png',
   userInterfaceStyle: 'automatic',
-  splash: exists('./assets/splash.png')
-    ? { image: './assets/splash.png', resizeMode: 'contain', backgroundColor: '#F8F9FA' }
-    : undefined,
-
+  plugins: [['expo-notifications']],
   ios: {
-    jsEngine: 'jsc', // ← forza JSC su iOS (aiuta con crash "non-std C++ exception")
-    supportsTablet: false,
+    supportsTablet: true,
     bundleIdentifier: 'com.world.app',
-    infoPlist: {
-      NSMicrophoneUsageDescription: 'Usiamo il microfono per la dettatura e la traduzione vocale.',
-      NSSpeechRecognitionUsageDescription: 'Usiamo il riconoscimento vocale per trascrivere e tradurre ciò che dici.',
-      NSLocationWhenInUseUsageDescription: 'Usiamo la posizione per meteo e luoghi vicini.'
-    }
   },
-
   android: {
-    jsEngine: 'jsc', // opzionale ma coerente
     package: 'com.world.app',
-    adaptiveIcon:
-      exists('./assets/adaptive-icon-foreground.png') && exists('./assets/adaptive-icon-background.png')
-        ? {
-            foregroundImage: './assets/adaptive-icon-foreground.png',
-            backgroundImage: './assets/adaptive-icon-background.png'
-          }
-        : undefined,
-    permissions: ['RECORD_AUDIO', 'ACCESS_COARSE_LOCATION', 'ACCESS_FINE_LOCATION']
+    permissions: ['RECORD_AUDIO','INTERNET','ACCESS_FINE_LOCATION'],
+    jsEngine: 'jsc',
   },
-
-  plugins: [],
-
   extra: {
-    // Leggi da .env se presenti, altrimenti fallback (sostituisci con i tuoi)
-    supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL ?? 'https://YOUR_PROJECT.supabase.co',
-    supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? 'YOUR_ANON_KEY',
-    eas: { projectId: '372b8f5e-6c91-4073-822d-f55ef081cf6f' }
+    EXPO_PUBLIC_SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
+    EXPO_PUBLIC_SUPABASE_ANON_KEY: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
+    EXPO_PUBLIC_TRANSLATE_PROVIDER: process.env.EXPO_PUBLIC_TRANSLATE_PROVIDER,
+    EXPO_PUBLIC_DEEPL_KEY: process.env.EXPO_PUBLIC_DEEPL_KEY,
+    EXPO_PUBLIC_GOOGLE_KEY: process.env.EXPO_PUBLIC_GOOGLE_KEY,
+    EXPO_PUBLIC_SAFE_MODE: process.env.EXPO_PUBLIC_SAFE_MODE,
+    EXPO_PUBLIC_ENABLE_STT: process.env.EXPO_PUBLIC_ENABLE_STT,
   }
 };
 

@@ -1,100 +1,125 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
+import { View, Text, Pressable, Alert, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import * as Localization from 'expo-localization';
+import { saveProfile, getProfileWithFallback, type ProfileRow } from '../lib/profile';
 import { supabase } from '../lib/supabase';
 
-const LANGS = ['it','en','es','de','fr'] as const;
+const LANGS: Array<'it'|'en'|'es'|'de'|'fr'> = ['it','en','es','de','fr'];
 
 export default function ProfileScreen() {
   const { t, i18n } = useTranslation();
-  const def = (Localization.getLocales?.()[0]?.languageCode ?? 'en') as string;
-
-  const [email, setEmail] = useState('');
-  const [userLang, setUserLang] = useState<string>(i18n.language || def);
-  const [destLang, setDestLang] = useState<string>('it');
+  const [email, setEmail] = useState<string | undefined>(undefined);
+  const [userLang, setUserLang] = useState<'it'|'en'|'es'|'de'|'fr'>('en');
+  const [destLang, setDestLang] = useState<'it'|'en'|'es'|'de'|'fr'>('it');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [source, setSource] = useState<'supabase'|'storage'>('storage');
 
   useEffect(() => {
     (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-      setEmail(session.user.email || '');
-
-      const { data } = await supabase
-        .from('profiles')
-        .select('language,destination_language')
-        .eq('id', session.user.id)
-        .single();
-
-      if (data?.language) { setUserLang(data.language); i18n.changeLanguage(data.language); }
-      else { setUserLang(def); i18n.changeLanguage(def); }
-
-      if (data?.destination_language) setDestLang(data.destination_language);
+      try {
+        const { profile, fromStorage } = await getProfileWithFallback();
+        if (profile) {
+          setEmail(profile.email);
+          setUserLang(profile.language);
+          setDestLang(profile.destination_language);
+          setSource(fromStorage ? 'storage' : 'supabase');
+          i18n.changeLanguage(profile.language);
+        }
+      } catch (e:any) {
+        console.warn('Profile load error', e?.message);
+      } finally {
+        setLoading(false);
+      }
     })();
   }, []);
 
-  const save = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return Alert.alert('Auth', 'Devi accedere prima.');
+  async function onSave() {
+    setSaving(true);
+    try {
+      if (userLang === destLang) {
+        Alert.alert(t('profile.title', { defaultValue: 'Profilo' }), t('phrases.sameLangMsg', { defaultValue: 'Le lingue non possono coincidere. Scegline due diverse.' }));
+        return;
+      }
+      await saveProfile({ language: userLang, destination_language: destLang });
+      i18n.changeLanguage(userLang);
+      Alert.alert(t('profile.title', { defaultValue: 'Profilo' }), t('profile.saved', { defaultValue: 'Preferenze salvate.' }));
+    } catch (e:any) {
+      Alert.alert(t('profile.title', { defaultValue: 'Profilo' }), e?.message || 'Errore di salvataggio.');
+    } finally {
+      setSaving(false);
+    }
+  }
 
-    const { error } = await supabase.from('profiles').upsert({
-      id: session.user.id,
-      language: userLang,
-      destination_language: destLang,
-      updated_at: new Date().toISOString()
-    });
+  async function onSignOut() {
+    try { await supabase.auth.signOut(); } catch {}
+  }
 
-    if (error) Alert.alert('Errore', error.message);
-    else Alert.alert('✓', t('profile.saved'));
-  };
+  if (loading) return <View style={styles.container}><Text style={styles.title}>Loading…</Text></View>;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{t('profile.title')}</Text>
+      <Text style={styles.title}>{t('profile.title', { defaultValue: 'Profilo' })}</Text>
 
-      <Text style={styles.label}>{t('profile.email')}</Text>
-      <Text style={styles.value}>{email || '-'}</Text>
-
-      <Text style={styles.label}>{t('profile.language')}</Text>
-      <View style={styles.row}>
-        {LANGS.map(l => (
-          <Pressable key={l} onPress={() => { setUserLang(l); i18n.changeLanguage(l); }}
-            style={[styles.chip, userLang===l && styles.chipActive]}>
-            <Text style={[styles.chipText, userLang===l && styles.chipTextActive]}>{l.toUpperCase()}</Text>
-          </Pressable>
-        ))}
+      <View style={styles.rowBetween}>
+        <Text style={styles.label}>Email</Text>
+        <Text style={styles.value}>{email || t('auth.offline', { defaultValue: 'offline' })}</Text>
       </View>
 
-      <Text style={styles.label}>{t('profile.destinationLanguage')}</Text>
-      <View style={styles.row}>
-        {LANGS.map(l => (
-          <Pressable key={l} onPress={() => setDestLang(l)}
-            style={[styles.chip, destLang===l && styles.chipActive]}>
-            <Text style={[styles.chipText, destLang===l && styles.chipTextActive]}>{l.toUpperCase()}</Text>
-          </Pressable>
-        ))}
+      <View style={styles.rowBetween}>
+        <Text style={styles.label}>{t('phrases.fromLang', { defaultValue: 'Lingua utente' })}</Text>
+        <View style={styles.langRow}>
+          {LANGS.map(l => (
+            <Pressable key={'u-'+l} onPress={() => setUserLang(l)} style={[styles.chip, userLang===l && styles.chipActive]}>
+              <Text style={[styles.chipText, userLang===l && styles.chipTextActive]}>{l.toUpperCase()}</Text>
+            </Pressable>
+          ))}
+        </View>
       </View>
 
-      <Pressable style={styles.btn} onPress={save}><Text style={styles.btnText}>{t('profile.save')}</Text></Pressable>
-      <Pressable style={[styles.btnOutline,{marginTop:8}]} onPress={() => supabase.auth.signOut()}>
-        <Text style={styles.btnOutlineText}>{t('profile.signOut')}</Text>
+      <View style={styles.rowBetween}>
+        <Text style={styles.label}>{t('phrases.toLang', { defaultValue: 'Lingua destinazione' })}</Text>
+        <View style={styles.langRow}>
+          {LANGS.map(l => (
+            <Pressable key={'d-'+l} onPress={() => setDestLang(l)} disabled={l===userLang} style={[styles.chip, destLang===l && styles.chipActive, l===userLang && styles.chipDisabled]}>
+              <Text style={[styles.chipText, destLang===l && styles.chipTextActive]}>{l.toUpperCase()}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+
+      <Pressable onPress={onSave} disabled={saving} style={[styles.btn, saving && { opacity: .6 }]}>
+        <Text style={styles.btnTxt}>{t('profile.save', { defaultValue: 'Salva' })}</Text>
       </Pressable>
+
+      <Pressable onPress={onSignOut} style={[styles.btnOutline]}>
+        <Text style={styles.btnOutlineTxt}>{t('auth.signOut', { defaultValue: 'Esci' })}</Text>
+      </Pressable>
+
+      <Text style={styles.hint}>
+        {source === 'supabase'
+          ? t('profile.synced', { defaultValue: 'Sincronizzato con Supabase • RLS attive' })
+          : t('profile.localOnly', { defaultValue: 'Offline: preferenze salvate solo sul dispositivo' })}
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container:{flex:1,padding:16,backgroundColor:'#F8F9FA'},
-  title:{fontSize:24,fontWeight:'800',color:'#111',marginBottom:12},
-  label:{color:'#333',marginTop:8,marginBottom:4,opacity:0.9},
-  value:{color:'#111',fontWeight:'700'},
-  row:{flexDirection:'row',flexWrap:'wrap',gap:8},
-  chip:{paddingVertical:6,paddingHorizontal:10,borderRadius:20,borderColor:'#0A84FF',borderWidth:1,backgroundColor:'white',marginBottom:8},
-  chipActive:{backgroundColor:'#0A84FF'},
-  chipText:{color:'#0A84FF'},
-  chipTextActive:{color:'white',fontWeight:'700'},
-  btn:{marginTop:12,backgroundColor:'#0A84FF',padding:12,borderRadius:12,alignItems:'center'},
-  btnText:{color:'white',fontWeight:'700'},
-  btnOutline:{borderWidth:1,borderColor:'#0A84FF',padding:12,borderRadius:12,alignItems:'center'},
-  btnOutlineText:{color:'#0A84FF',fontWeight:'700'}
+  container:{ flex:1, padding:24, backgroundColor:'#F8F9FA' },
+  title:{ fontSize:24, fontWeight:'800', marginBottom:16 },
+  rowBetween:{ marginBottom:12 },
+  label:{ fontWeight:'700', marginBottom:6 },
+  value:{ backgroundColor:'#fff', padding:12, borderRadius:10, borderWidth:1, borderColor:'#eee' },
+  langRow:{ flexDirection:'row', flexWrap:'wrap', gap:8, justifyContent:'flex-end' },
+  chip:{ paddingVertical:8, paddingHorizontal:12, borderRadius:999, borderWidth:1, borderColor:'#0A84FF', backgroundColor:'#fff' },
+  chipActive:{ backgroundColor:'#0A84FF' },
+  chipText:{ color:'#0A84FF', fontWeight:'700' },
+  chipTextActive:{ color:'#fff' },
+  chipDisabled:{ opacity:.4 },
+  btn:{ marginTop:18, backgroundColor:'#0A84FF', padding:14, borderRadius:12, alignItems:'center' },
+  btnTxt:{ color:'#fff', fontWeight:'700' },
+  btnOutline:{ marginTop:10, padding:12, borderRadius:12, alignItems:'center', borderWidth:1, borderColor:'#0A84FF', backgroundColor:'#fff' },
+  btnOutlineTxt:{ color:'#0A84FF', fontWeight:'700' },
+  hint:{ marginTop:14, textAlign:'center', color:'#64748B' }
 });

@@ -1,10 +1,14 @@
 {
   "tabs": {
     "trip": "Trip",
+    "weather": "Meteo",
     "usefulPhrases": "Frasi Utili",
     "profile": "Profilo"
   },
-  "intro": { "subtitle": "La tua guida smart e amichevole.", "getStarted": "Inizia" },
+  "intro": {
+    "subtitle": "La tua guida smart e amichevole.",
+    "getStarted": "Inizia"
+  },
   "auth": {
     "title": "Accedi",
     "caption": "Riceverai un link magico via email.",
@@ -25,10 +29,16 @@
   "phrases": {
     "title": "Frasi Utili",
     "usefulTitle": "Frasi Utili",
-    "freeInputPlaceholder": "Scrivi o parla…",
+    "freeInputPlaceholder": "Scrivi o parla",
     "translate": "Traduci",
     "speak": "Parla",
     "yourLangFirst": "Prima nella tua lingua, poi nella lingua locale",
+    "fromLang": "Lingua utente",
+    "toLang": "Lingua destinazione",
+    "free": {
+      "placeholder": "Scrivi qui…",
+      "translate": "Traduci"
+    },
     "cat": {
       "greetings": "Saluti",
       "directions": "Indicazioni",
@@ -49,7 +59,7 @@
       "9": "Come stai?",
       "10": "Sto bene, grazie",
       "11": "Come ti chiami?",
-      "12": "Mi chiamo...",
+      "12": "Mi chiamo…",
       "13": "Parli inglese?",
       "14": "Buona giornata"
     },
@@ -82,7 +92,7 @@
       "8": "La specialità della casa",
       "9": "Il menù in inglese, per favore",
       "10": "Senza frutta secca, grazie",
-      "11": "Sono allergico a...",
+      "11": "Sono allergico a…",
       "12": "Posso vedere il menù?",
       "13": "Cosa consiglia?",
       "14": "Da asporto, per favore"
@@ -129,14 +139,38 @@
     "tempMinMax": "min {{min}}° / max {{max}}°",
     "rainProb": "Pioggia {{p}}%",
     "weatherNA": "Meteo non disponibile",
-    "badWeatherHint": "Pioggia probabile: preferiti itinerari indoor.",
-    "filter": { "all": "Tutti", "indoor": "Indoor", "outdoor": "Outdoor" },
+    "badWeatherHint": "Pioggia probabile: meglio attività indoor.",
+    "filter": {
+      "all": "Tutti",
+      "indoor": "Indoor",
+      "outdoor": "Outdoor"
+    },
     "suggested": "Itinerario suggerito",
     "allPOI": "Tutti i POI",
     "indoor": "Indoor",
     "outdoor": "Outdoor",
     "hoursNA": "Orari non disponibili",
-    "price": "€ {{v}}"
+    "price": "{{v}} €"
+  },
+  "weather": {
+    "title": "Meteo",
+    "detailsFor": "Dettagli meteo per {{city}} il {{date}}",
+    "dayparts": "Fasce orarie",
+    "parts": {
+      "morning": "Mattino",
+      "afternoon": "Pomeriggio",
+      "evening": "Sera",
+      "night": "Notte"
+    },
+    "map": "Mappa meteo",
+    "mapForecast": "Previsioni",
+    "mapRadar": "Radar",
+    "humidity": "Umidità: {{v}}%",
+    "wind": "Vento: {{v}} km/h",
+    "precip": "Precipitazioni: {{v}} mm",
+    "pressure": "Pressione: {{v}} hPa",
+    "uv": "UV: {{v}}",
+    "visibility": "Visibilità: {{v}} m",
+    "webviewMissing": "Installa react-native-webview per vedere la mappa."
   }
 }
-

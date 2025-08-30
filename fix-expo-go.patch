@@ -1,0 +1,461 @@
+diff --git a/app.config.ts b/app.config.ts
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/app.config.ts
+@@ -0,0 +1,79 @@
++// app.config.ts
++import 'dotenv/config';
++import type { ExpoConfig } from 'expo/config';
++import fs from 'fs';
++import path from 'path';
++
++const exists = (p: string) => fs.existsSync(path.resolve(__dirname, p));
++
++const config: ExpoConfig = {
++  name: 'World',
++  slug: 'world',
++  scheme: 'world',
++  version: '0.3.1',
++  orientation: 'portrait',
++
++  // asset solo se esistono (evita errori in dev)
++  icon: exists('./assets/icon.png') ? './assets/icon.png' : undefined,
++  userInterfaceStyle: 'automatic',
++  splash: exists('./assets/splash.png')
++    ? { image: './assets/splash.png', resizeMode: 'contain', backgroundColor: '#F8F9FA' }
++    : undefined,
++
++  ios: {
++    jsEngine: 'jsc', // evita crash generici su alcune combinazioni Expo Go/Hermes
++    supportsTablet: false,
++    bundleIdentifier: 'com.world.app',
++    infoPlist: {
++      NSMicrophoneUsageDescription: 'Usiamo il microfono per dettatura e traduzione vocale.',
++      NSSpeechRecognitionUsageDescription: 'Usiamo il riconoscimento vocale per trascrivere e tradurre cio che dici.',
++      NSLocationWhenInUseUsageDescription: 'Usiamo la posizione per meteo e luoghi vicini.'
++    }
++  },
++
++  android: {
++    jsEngine: 'jsc',
++    package: 'com.world.app',
++    adaptiveIcon:
++      exists('./assets/adaptive-icon-foreground.png') && exists('./assets/adaptive-icon-background.png')
++        ? {
++            foregroundImage: './assets/adaptive-icon-foreground.png',
++            backgroundImage: './assets/adaptive-icon-background.png'
++          }
++        : undefined,
++    permissions: ['RECORD_AUDIO', 'ACCESS_COARSE_LOCATION', 'ACCESS_FINE_LOCATION']
++  },
++
++  plugins: [], // nessun config plugin per expo-speech
++
++  extra: {
++    supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL ?? 'https://YOUR_PROJECT.supabase.co',
++    supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? 'YOUR_ANON_KEY',
++    eas: { projectId: '372b8f5e-6c91-4073-822d-f55ef081cf6f' }
++  }
++};
++
++export default config;
+diff --git a/App.tsx b/App.tsx
+new file mode 100644
+index 0000000..2222222
+--- /dev/null
++++ b/App.tsx
+@@ -0,0 +1,39 @@
++// App.tsx
++import 'react-native-gesture-handler';
++import React from 'react';
++import { SafeAreaProvider } from 'react-native-safe-area-context';
++import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
++import { StatusBar, View, Text } from 'react-native';
++
++import './src/lib/i18n';
++import RootNavigator from './src/navigation/RootNavigator';
++
++const SAFE_MODE = process.env.EXPO_PUBLIC_SAFE_MODE === '1';
++
++export default function App() {
++  if (SAFE_MODE) {
++    return (
++      <SafeAreaProvider>
++        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F8F9FA' }}>
++          <Text style={{ fontSize: 18, fontWeight: '700' }}>World (Safe Mode)</Text>
++          <Text style={{ marginTop: 8, opacity: 0.8 }}>UI minima per testare l'avvio</Text>
++        </View>
++      </SafeAreaProvider>
++    );
++  }
++
++  return (
++    <SafeAreaProvider>
++      <NavigationContainer theme={DefaultTheme}>
++        <StatusBar barStyle="dark-content" />
++        <RootNavigator />
++      </NavigationContainer>
++    </SafeAreaProvider>
++  );
++}
+diff --git a/src/lib/i18n.ts b/src/lib/i18n.ts
+new file mode 100644
+index 0000000..3333333
+--- /dev/null
++++ b/src/lib/i18n.ts
+@@ -0,0 +1,48 @@
++import * as Localization from 'expo-localization';
++import i18n from 'i18next';
++import { initReactI18next } from 'react-i18next';
++
++import it from '../locales/it.json';
++import en from '../locales/en.json';
++import es from '../locales/es.json';
++import de from '../locales/de.json';
++import fr from '../locales/fr.json';
++
++const locales: any[] = (Localization as any)?.getLocales?.() ?? [];
++const primary = locales[0];
++const detectedLang =
++  primary?.languageCode ||
++  primary?.languageTag?.split?.('-')?.[0] ||
++  (Localization as any)?.locale?.split?.('-')?.[0] ||
++  'en';
++
++i18n
++  .use(initReactI18next)
++  .init({
++    resources: {
++      it: { translation: it as any },
++      en: { translation: en as any },
++      es: { translation: es as any },
++      de: { translation: de as any },
++      fr: { translation: fr as any }
++    },
++    lng: detectedLang || 'en',
++    fallbackLng: 'en',
++    interpolation: { escapeValue: false },
++    react: { useSuspense: false }, // evita schermo bianco su web
++    initImmediate: false
++  });
++
++export default i18n;
+diff --git a/src/lib/speech.ts b/src/lib/speech.ts
+new file mode 100644
+index 0000000..4444444
+--- /dev/null
++++ b/src/lib/speech.ts
+@@ -0,0 +1,76 @@
++import { Platform } from 'react-native';
++import Constants from 'expo-constants';
++
++const isExpoGo =
++  (Constants as any)?.appOwnership === 'expo' ||
++  (Constants as any)?.executionEnvironment === 'storeClient';
++const isWeb = Platform.OS === 'web';
++
++let ExpoSpeech: any = null;
++try {
++  // eslint-disable-next-line @typescript-eslint/no-var-requires
++  ExpoSpeech = require('expo-speech');
++} catch {
++  ExpoSpeech = null;
++}
++
++export function canSpeak(): boolean {
++  if (isExpoGo) return false; // disattivato in Expo Go per evitare crash
++  if (isWeb) return typeof window !== 'undefined' && 'speechSynthesis' in window;
++  return !!ExpoSpeech?.speak;
++}
++
++export function speak(text: string, lang?: string) {
++  if (!text) return;
++  try {
++    if (isExpoGo) return;
++    if (isWeb && typeof window !== 'undefined' && 'speechSynthesis' in window) {
++      const u = new (window as any).SpeechSynthesisUtterance(text);
++      if (lang) u.lang = lang;
++      (window as any).speechSynthesis.speak(u);
++      return;
++    }
++    ExpoSpeech?.speak?.(text, { language: lang });
++  } catch {}
++}
++
++export function stopSpeaking() {
++  try {
++    if (isExpoGo) return;
++    if (isWeb && typeof window !== 'undefined' && 'speechSynthesis' in window) {
++      (window as any).speechSynthesis.cancel();
++      return;
++    }
++    ExpoSpeech?.stop?.();
++  } catch {}
++}
++
++let Voice: any = null;
++export async function ensureVoice() {
++  if (isExpoGo || isWeb) return null; // STT solo in dev build/standalone
++  if (Voice) return Voice;
++  try {
++    const mod = await import('react-native-voice');
++    Voice = mod?.default ?? mod;
++  } catch {
++    Voice = null;
++  }
++  return Voice;
++}
+diff --git a/src/screens/TripScreen.tsx b/src/screens/TripScreen.tsx
+new file mode 100644
+index 0000000..5555555
+--- /dev/null
++++ b/src/screens/TripScreen.tsx
+@@ -0,0 +1,196 @@
++import React, { useMemo, useState, useEffect } from 'react';
++import { View, Text, StyleSheet, Pressable, FlatList, ScrollView } from 'react-native';
++import dayjs from 'dayjs';
++import { useTranslation } from 'react-i18next';
++import Constants from 'expo-constants';
++import { getDailyWeather, WeatherSummary } from '../lib/weather';
++import { POI, POIS, CityKey, CITIES } from '../data/pois';
++
++type Filter = 'all' | 'indoor' | 'outdoor';
++
++export default function TripScreen() {
++  const { t } = useTranslation();
++  const [city, setCity] = useState<CityKey>('rome');
++  const [selectedDay, setSelectedDay] = useState<number>(0);
++  const [filter, setFilter] = useState<Filter>('all');
++  const [weather, setWeather] = useState<WeatherSummary | null>(null);
++  const date = useMemo(() => dayjs().add(selectedDay, 'day'), [selectedDay]);
++
++  useEffect(() => {
++    (async () => {
++      try {
++        const isExpoGo =
++          (Constants as any)?.appOwnership === 'expo' ||
++          (Constants as any)?.executionEnvironment === 'storeClient';
++        if (isExpoGo) { setWeather(null); return; }
++        const c = CITIES[city];
++        const w = await getDailyWeather(c.lat, c.lon, date.toDate());
++        setWeather(w);
++      } catch {
++        setWeather(null);
++      }
++    })();
++  }, [city, selectedDay, date]);
++
++  const isBadWeather = useMemo(() => {
++    if (!weather) return false;
++    return (weather.precipProb ?? 0) >= 40 || (weather.precipSum ?? 0) >= 2;
++  }, [weather]);
++
++  const filtered = useMemo(() => {
++    let list = POIS.filter(p => p.city === city);
++    if (filter === 'indoor') list = list.filter(p => p.indoor === true);
++    if (filter === 'outdoor') list = list.filter(p => p.indoor === false);
++    return list;
++  }, [city, filter]);
++
++  const suggested = useMemo(() => {
++    const base = filtered.slice();
++    const preferIndoor = isBadWeather;
++    base.sort((a, b) => {
++      const ai = preferIndoor ? (a.indoor ? 0 : 1) : (a.indoor ? 1 : 0);
++      const bi = preferIndoor ? (b.indoor ? 0 : 1) : (b.indoor ? 1 : 0);
++      if (ai !== bi) return ai - bi;
++      const mid = (v: number) => Math.abs(v - 15);
++      return mid(a.price ?? 15) - mid(b.price ?? 15);
++    });
++    const picked: POI[] = [];
++    const seenCat = new Set<string>();
++    for (const p of base) {
++      if (picked.length >= 6) break;
++      if (!seenCat.has(p.category) || picked.length < 3) {
++        picked.push(p);
++        seenCat.add(p.category);
++      }
++    }
++    return picked;
++  }, [filtered, isBadWeather]);
++
++  return (
++    <View style={styles.container}>
++      <Text style={styles.title}>{t('trip.title')}</Text>
++
++      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.rowScroll}>
++        {(Object.keys(CITIES) as CityKey[]).map(key => (
++          <Pressable key={key} onPress={() => setCity(key)} style={[styles.chip, city === key && styles.chipActive]}>
++            <Text style={[styles.chipText, city === key && styles.chipTextActive]}>{CITIES[key].label}</Text>
++          </Pressable>
++        ))}
++      </ScrollView>
++
++      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.rowScroll}>
++        {Array.from({ length: 10 }).map((_, i) => {
++          const d = dayjs().add(i, 'day');
++          const label = i === 0 ? t('trip.today') : d.format('DD MMM');
++          const active = i === selectedDay;
++          return (
++            <Pressable key={i} onPress={() => setSelectedDay(i)} style={[styles.chip, active && styles.chipActive]}>
++              <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
++            </Pressable>
++          );
++        })}
++      </ScrollView>
++
++      <View style={styles.weatherBox}>
++        <Text style={styles.weatherTitle}>
++          {t('trip.weatherFor', { city: CITIES[city].label, date: date.format('DD MMM') })}
++        </Text>
++        {weather ? (
++          <Text style={styles.weatherLine}>
++            {weather.summary} — {t('trip.tempMinMax', { min: Math.round(weather.tmin ?? 0), max: Math.round(weather.tmax ?? 0) })}
++            {!!weather.precipProb && ` — ${t('trip.rainProb', { p: Math.round(weather.precipProb) })}`}
++          </Text>
++        ) : (
++          <Text style={styles.weatherLineMuted}>{t('trip.weatherNA')}</Text>
++        )}
++        {isBadWeather && <Text style={styles.badWeather}>{t('trip.badWeatherHint')}</Text>}
++      </View>
++
++      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.rowScroll}>
++        {(['all', 'indoor', 'outdoor'] as Filter[]).map(f => (
++          <Pressable key={f} onPress={() => setFilter(f)} style={[styles.chipSmall, filter === f && styles.chipActive]}>
++            <Text style={[styles.chipTextSmall, filter === f && styles.chipTextActive]}>{t(`trip.filter.${f}`)}</Text>
++          </Pressable>
++        ))}
++      </ScrollView>
++
++      <Text style={styles.sectionTitle}>{t('trip.suggested')}</Text>
++      <FlatList
++        data={suggested}
++        keyExtractor={p => p.id}
++        renderItem={({ item }) => (
++          <View style={styles.card}>
++            <View style={{ flex: 1 }}>
++              <Text style={styles.poiName}>{item.name}</Text>
++              <Text style={styles.poiMeta}>
++                {item.category} • {item.indoor ? t('trip.indoor') : t('trip.outdoor')} • {item.hours ?? t('trip.hoursNA')}
++              </Text>
++              {!!item.price && <Text style={styles.poiPrice}>{t('trip.price', { v: item.price })}</Text>}
++              {!!item.tags?.length && <Text style={styles.poiTags}>{item.tags.map(tg => `#${tg}`).join(' ')}</Text>}
++            </View>
++          </View>
++        )}
++        contentContainerStyle={{ paddingBottom: 16 }}
++      />
++
++      <Text style={styles.sectionTitle}>{t('trip.allPOI')}</Text>
++      <FlatList
++        data={filtered}
++        keyExtractor={p => 'all-' + p.id}
++        renderItem={({ item }) => (
++          <View style={styles.cardSm}>
++            <Text style={styles.poiNameSm}>{item.name}</Text>
++            <Text style={styles.poiMetaSm}>
++              {item.category} • {item.indoor ? t('trip.indoor') : t('trip.outdoor')} • {item.hours ?? t('trip.hoursNA')}
++            </Text>
++          </View>
++        )}
++      />
++    </View>
++  );
++}
++
++const styles = StyleSheet.create({
++  container: { flex: 1, padding: 16, backgroundColor: '#F8F9FA' },
++  title: { fontSize: 24, fontWeight: '800', color: '#111', marginBottom: 8 },
++  rowScroll: { paddingVertical: 8, paddingRight: 8 },
++  chip: { paddingVertical: 8, paddingHorizontal: 12, borderRadius: 20, borderColor: '#0A84FF', borderWidth: 1, backgroundColor: 'white', marginRight: 8 },
++  chipSmall: { paddingVertical: 6, paddingHorizontal: 10, borderRadius: 16, borderColor: '#0A84FF', borderWidth: 1, backgroundColor: 'white', marginRight: 8 },
++  chipActive: { backgroundColor: '#0A84FF' },
++  chipText: { color: '#0A84FF', fontWeight: '700' },
++  chipTextActive: { color: 'white', fontWeight: '700' },
++  chipTextSmall: { color: '#0A84FF' },
++  weatherBox: { backgroundColor: 'white', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#eee', marginBottom: 8 },
++  weatherTitle: { fontWeight: '700', marginBottom: 4, color: '#111' },
++  weatherLine: { color: '#111' },
++  weatherLineMuted: { color: '#666', fontStyle: 'italic' },
++  badWeather: { marginTop: 4, color: '#D9480F', fontWeight: '700' },
++  sectionTitle: { marginTop: 8, marginBottom: 6, fontSize: 16, fontWeight: '700', color: '#111' },
++  card: { backgroundColor: 'white', borderRadius: 12, padding: 12, marginBottom: 8, borderWidth: 1, borderColor: '#eee', flexDirection: 'row' },
++  poiName: { fontWeight: '800', color: '#111', fontSize: 16 },
++  poiMeta: { color: '#333', opacity: 0.9, marginTop: 2 },
++  poiPrice: { color: '#111', marginTop: 2, fontWeight: '700' },
++  poiTags: { color: '#555', marginTop: 4, fontStyle: 'italic' },
++  cardSm: { backgroundColor: 'white', borderRadius: 12, padding: 10, borderWidth: 1, borderColor: '#eee', marginBottom: 8 },
++  poiNameSm: { fontWeight: '700', color: '#111' },
++  poiMetaSm: { color: '#333', opacity: 0.9, marginTop: 2 }
++});
+diff --git a/src/navigation/RootNavigator.tsx b/src/navigation/RootNavigator.tsx
+new file mode 100644
+index 0000000..6666666
+--- /dev/null
++++ b/src/navigation/RootNavigator.tsx
+@@ -0,0 +1,97 @@
++import React, { useEffect, useState } from 'react';
++import { createNativeStackNavigator } from '@react-navigation/native-stack';
++import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
++import { Ionicons } from '@expo/vector-icons';
++import { useTranslation } from 'react-i18next';
++import { supabase } from '../lib/supabase';
++
++import LoginScreen from '../screens/LoginScreen';
++import ProfileScreen from '../screens/ProfileScreen';
++import UsefulPhrasesScreen from '../screens/UsefulPhrasesScreen';
++import TripScreen from '../screens/TripScreen';
++
++type RootStackParamList = { Auth: undefined; Main: undefined; };
++type MainTabParamList = { Trip: undefined; Phrases: undefined; Profile: undefined; };
++
++const Stack = createNativeStackNavigator<RootStackParamList>();
++const Tab = createBottomTabNavigator<MainTabParamList>();
++
++function MainTabs() {
++  const { t } = useTranslation();
++  return (
++    <Tab.Navigator screenOptions={{ headerShown: false }}>
++      <Tab.Screen
++        name="Trip"
++        component={TripScreen}
++        options={{
++          title: t('tabs.trip'),
++          tabBarIcon: ({ color, size }) => <Ionicons name="map" color={color} size={size} />
++        }}
++      />
++      <Tab.Screen
++        name="Phrases"
++        component={UsefulPhrasesScreen}
++        options={{
++          title: t('tabs.usefulPhrases'),
++          tabBarIcon: ({ color, size }) => <Ionicons name="chatbubbles" color={color} size={size} />
++        }}
++      />
++      <Tab.Screen
++        name="Profile"
++        component={ProfileScreen}
++        options={{
++          title: t('tabs.profile'),
++          tabBarIcon: ({ color, size }) => <Ionicons name="person" color={color} size={size} />
++        }}
++      />
++    </Tab.Navigator>
++  );
++}
++
++export default function RootNavigator() {
++  const [session, setSession] = useState<any>(null);
++  useEffect(() => {
++    supabase.auth.getSession().then(({ data }) => setSession(data.session));
++    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
++    return () => sub.subscription.unsubscribe();
++  }, []);
++
++  return (
++    <Stack.Navigator screenOptions={{ headerShown: false }}>
++      {!session ? <Stack.Screen name="Auth" component={LoginScreen} /> : <Stack.Screen name="Main" component={MainTabs} />}
++    </Stack.Navigator>
++  );
++}
